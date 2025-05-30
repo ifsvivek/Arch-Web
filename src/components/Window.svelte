@@ -10,6 +10,7 @@
 	function handleMouseDown(event) {
 		if (event.target.closest('.window-controls')) return;
 
+		event.preventDefault();
 		isDragging = true;
 		dragOffset = {
 			x: event.clientX - window.position.x,
@@ -19,16 +20,26 @@
 		desktopState.setActiveWindow(window.id);
 		document.addEventListener('mousemove', handleMouseMove);
 		document.addEventListener('mouseup', handleMouseUp);
+		
+		// Prevent text selection while dragging
+		document.body.style.userSelect = 'none';
 	}
 
 	function handleMouseMove(event) {
 		if (!isDragging) return;
 
+		event.preventDefault();
+		
+		// Get viewport dimensions
+		const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+		const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+		
+		// Calculate new position with proper bounds
 		const newPosition = {
-			x: Math.max(0, Math.min(event.clientX - dragOffset.x, window.innerWidth - window.size.width)),
+			x: Math.max(0, Math.min(event.clientX - dragOffset.x, viewportWidth - window.size.width)),
 			y: Math.max(
-				32,
-				Math.min(event.clientY - dragOffset.y, window.innerHeight - window.size.height)
+				32, // Account for top bar
+				Math.min(event.clientY - dragOffset.y, viewportHeight - window.size.height - 32)
 			)
 		};
 
@@ -39,6 +50,9 @@
 		isDragging = false;
 		document.removeEventListener('mousemove', handleMouseMove);
 		document.removeEventListener('mouseup', handleMouseUp);
+		
+		// Re-enable text selection
+		document.body.style.userSelect = '';
 	}
 
 	function closeWindow() {
@@ -95,8 +109,17 @@
 		</div>
 
 		<!-- Window Content -->
-		<div class="h-full overflow-auto pb-8">
-			<svelte:component this={window.component} />
+		<div class="h-full overflow-auto pb-8 bg-white">
+			{#if window.component}
+				<svelte:component this={window.component} />
+			{:else}
+				<div class="flex items-center justify-center h-full text-gray-500">
+					<div class="text-center">
+						<p class="text-lg font-medium mb-2">Application Not Available</p>
+						<p class="text-sm">This application is under development.</p>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</div>
 {/if}

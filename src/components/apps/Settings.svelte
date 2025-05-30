@@ -1,10 +1,12 @@
 <!-- filepath: /home/ifsvivek/Documents/Arch Web/src/components/apps/Settings.svelte -->
 <script>
+	import { desktopState } from '$lib/stores/desktop.svelte.js';
+	
 	let activeTab = $state('appearance');
 	let settings = $state({
 		appearance: {
 			theme: 'dark',
-			wallpaper: 'arch-blue',
+			wallpaper: 'arch-nz',
 			iconTheme: 'papirus',
 			fontSize: 14
 		},
@@ -29,6 +31,7 @@
 	];
 
 	const wallpapers = [
+		{ id: 'arch-nz', name: 'Arch NZ', preview: 'url(https://roboticoverlords.org/wallpapers/arch_nz.png)' },
 		{ id: 'arch-blue', name: 'Arch Blue', preview: '#1e3a8a' },
 		{ id: 'arch-purple', name: 'Arch Purple', preview: '#7c3aed' },
 		{ id: 'minimal-dark', name: 'Minimal Dark', preview: '#111827' },

@@ -9,6 +9,11 @@
 	// Sample images
 	const sampleImages = [
 		{
+			name: 'arch-nz-wallpaper.png',
+			url: 'https://roboticoverlords.org/wallpapers/arch_nz.png',
+			size: '1920x1080'
+		},
+		{
 			name: 'arch-wallpaper.jpg',
 			url:
 				'data:image/svg+xml;base64,' +

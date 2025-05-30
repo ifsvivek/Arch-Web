@@ -3,6 +3,7 @@ export class DesktopState {
 	windows = $state([]);
 	activeWindowId = $state(null);
 	nextWindowId = $state(1);
+	currentWallpaper = $state('arch-nz');
 
 	constructor() {
 		// Initialize with current time
@@ -71,6 +72,10 @@ export class DesktopState {
 		}
 	}
 
+	setWallpaper(wallpaperId) {
+		this.currentWallpaper = wallpaperId;
+	}
+
 	formattedTime = $derived(
 		this.currentTime.toLocaleTimeString('en-US', {
 			hour: '2-digit',
@@ -86,6 +91,17 @@ export class DesktopState {
 			day: 'numeric'
 		})
 	);
+
+	wallpaperStyle = $derived(() => {
+		const wallpapers = {
+			'arch-nz': "background-image: url('https://roboticoverlords.org/wallpapers/arch_nz.png')",
+			'arch-blue': 'background: #1e3a8a',
+			'arch-purple': 'background: #7c3aed', 
+			'minimal-dark': 'background: #111827',
+			'gradient': 'background: linear-gradient(45deg, #1e3a8a, #7c3aed)'
+		};
+		return wallpapers[this.currentWallpaper] || wallpapers['arch-nz'];
+	});
 }
 
 // Create a singleton instance

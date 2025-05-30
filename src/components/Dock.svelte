@@ -7,7 +7,9 @@
 		Calculator,
 		ImageViewer,
 		SystemMonitor,
-		Settings
+		Settings,
+		WebBrowser,
+		MusicPlayer
 	} from '$apps';
 
 	const apps = [
@@ -39,36 +41,40 @@
 			id: 'image-viewer',
 			name: 'Image Viewer',
 			icon: 'image',
-			component: null // Will create this component
+			component: ImageViewer
 		},
 		{
 			id: 'system-monitor',
 			name: 'System Monitor',
 			icon: 'monitor',
-			component: null // Will create this component
+			component: SystemMonitor
 		},
 		{
 			id: 'settings',
 			name: 'Settings',
 			icon: 'settings',
-			component: null // Will create this component
+			component: Settings
 		},
 		{
 			id: 'web-browser',
 			name: 'Web Browser',
 			icon: 'browser',
-			component: null // Will create this component
+			component: WebBrowser
 		},
 		{
 			id: 'music-player',
 			name: 'Music Player',
 			icon: 'music',
-			component: null // Will create this component
+			component: MusicPlayer
 		}
 	];
 
 	function launchApp(app) {
-		desktopState.openWindow(app.id, app.name, app.component);
+		if (app.component) {
+			desktopState.openWindow(app.id, app.name, app.component);
+		} else {
+			console.warn(`No component available for ${app.name}`);
+		}
 	}
 
 	function getIconSvg(iconType) {
@@ -86,7 +92,11 @@
 			monitor:
 				'<g><rect x="2" y="3" width="20" height="14" rx="2" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="21" width="8" height="2" rx="1" fill="currentColor" opacity="0.6"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="1" opacity="0.6"><line x1="6" y1="7" x2="18" y2="7"/><line x1="6" y1="9" x2="16" y2="9"/><line x1="6" y1="11" x2="14" y2="11"/><line x1="6" y1="13" x2="12" y2="13"/></g></g>',
 			settings:
-				'<g><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 1v6m0 8v6m11-5h-6m-8 0H1m15.5-8.5L19 9l-2.5 2.5M7.5 6.5L5 9l2.5 2.5m7 7L17 21l-2.5-2.5M7.5 17.5L5 15l2.5-2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="1" fill="currentColor"/></g>'
+				'<g><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/></g>',
+			browser:
+				'<g><rect x="2" y="3" width="20" height="18" rx="2" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="1.5"/><circle cx="6.5" cy="6" r="1" fill="currentColor" opacity="0.6"/><circle cx="9.5" cy="6" r="1" fill="currentColor" opacity="0.6"/><circle cx="12.5" cy="6" r="1" fill="currentColor" opacity="0.6"/><rect x="6" y="13" width="12" height="2" rx="1" fill="currentColor" opacity="0.4"/><rect x="6" y="16" width="8" height="2" rx="1" fill="currentColor" opacity="0.4"/></g>',
+			music:
+				'<g><circle cx="12" cy="12" r="10" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/><circle cx="12" cy="12" r="3" fill="currentColor" opacity="0.3" stroke="currentColor" stroke-width="1.5"/><path d="M9 12h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M15 12h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M9.09 9.09L12 12l2.91-2.91" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 9l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></g>'
 		};
 		return icons[iconType] || '';
 	}
@@ -121,10 +131,11 @@
 	<!-- Running Applications Indicator -->
 	<div class="mt-auto w-full border-t border-gray-600 pt-2">
 		{#each desktopState.windows as window}
-			<div
-				class="mx-auto mb-1 h-2 w-2 cursor-pointer rounded-full bg-blue-400 hover:bg-blue-300"
+			<button
+				class="mx-auto mb-1 h-2 w-2 cursor-pointer rounded-full bg-blue-400 hover:bg-blue-300 block border-0 p-0"
 				onclick={() => desktopState.setActiveWindow(window.id)}
-			></div>
+				aria-label={`Switch to ${window.name}`}
+			></button>
 		{/each}
 	</div>
 </div>
