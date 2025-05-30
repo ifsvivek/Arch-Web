@@ -15,81 +15,116 @@
 	// Props
 	let { onShowAllApps = () => {}, showAppMenu = false } = $props();
 
-	// Search state
+	// Search state with debouncing
 	let searchTerm = $state('');
-	// DOM references should not use $state() but need to be declared with $ prefix in Svelte 5
 	let searchInput = $state(null);
+	let searchDebounceTimer = $state(null);
+	let debouncedSearchTerm = $state('');
 
-	// Add this logging to debug search term changes
-	function updateSearchTerm(event) {
-		searchTerm = event.target.value;
-		console.log('Search term updated:', searchTerm);
-	}
+	// Search performance tracking
+	let searchStartTime = $state(0);
+	let lastSearchDuration = $state(0);
 
 	const apps = [
 		{
 			id: 'file-explorer',
 			name: 'Files',
 			icon: 'folder',
-			component: FileExplorer
+			component: FileExplorer,
+			category: 'System',
+			description: 'Browse and manage your files and folders'
 		},
 		{
 			id: 'text-editor',
 			name: 'Text Editor',
 			icon: 'document',
-			component: TextEditor
+			component: TextEditor,
+			category: 'Productivity',
+			description: 'Create and edit text documents and code'
 		},
 		{
 			id: 'terminal',
 			name: 'Terminal',
 			icon: 'terminal',
-			component: Terminal
+			component: Terminal,
+			category: 'Development',
+			description: 'Command line interface for system operations'
 		},
 		{
 			id: 'calculator',
 			name: 'Calculator',
 			icon: 'calculator',
-			component: Calculator
+			component: Calculator,
+			category: 'Utilities',
+			description: 'Perform mathematical calculations'
 		},
 		{
 			id: 'image-viewer',
 			name: 'Image Viewer',
 			icon: 'image',
-			component: ImageViewer
+			component: ImageViewer,
+			category: 'Media',
+			description: 'View and manage your images and photos'
 		},
 		{
 			id: 'system-monitor',
 			name: 'System Monitor',
 			icon: 'monitor',
-			component: SystemMonitor
+			component: SystemMonitor,
+			category: 'System',
+			description: 'Monitor system performance and resources'
 		},
 		{
 			id: 'settings',
 			name: 'Settings',
 			icon: 'settings',
-			component: Settings
+			component: Settings,
+			category: 'System',
+			description: 'Configure system preferences and options'
 		},
 		{
 			id: 'web-browser',
 			name: 'Web Browser',
 			icon: 'browser',
-			component: WebBrowser
+			component: WebBrowser,
+			category: 'Internet',
+			description: 'Browse the web and access online content'
 		},
 		{
 			id: 'music-player',
 			name: 'Music Player',
 			icon: 'music',
-			component: MusicPlayer
+			component: MusicPlayer,
+			category: 'Media',
+			description: 'Play and manage your music collection'
 		}
 	];
+
+	// Enhanced search with debouncing
+	function updateSearchTerm(event) {
+		searchTerm = event.target.value;
+
+		// Clear existing timer
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+
+		// Set new timer for debounced search
+		searchDebounceTimer = setTimeout(() => {
+			searchStartTime = performance.now();
+			debouncedSearchTerm = searchTerm;
+			updateSearchDuration();
+		}, 150); // 150ms debounce delay
+	}
 
 	// Function to toggle app menu with search
 	function toggleAppMenu() {
 		onShowAllApps();
 		if (!showAppMenu) {
-			searchTerm = ''; // Clear search when closing menu
+			searchTerm = '';
+			debouncedSearchTerm = '';
 			if (searchInput) {
-				searchInput.focus(); // Focus search input when opening menu
+				setTimeout(() => searchInput?.focus(), 100);
 			}
 		}
 	}
@@ -106,67 +141,274 @@
 		if (showAppMenu) {
 			showAppMenu = false;
 			searchTerm = '';
+			debouncedSearchTerm = '';
 		}
 	}
 
-	// Filtered apps based on search term
-	const filteredApps = $derived(() => {
-		if (!searchTerm) return apps;
+	// Enhanced search algorithm with scoring
+	function calculateSearchScore(app, searchTerms) {
+		let score = 0;
+		const name = app.name.toLowerCase();
+		const id = app.id.toLowerCase();
+		const description = app.description.toLowerCase();
+		const category = app.category.toLowerCase();
+		const keywords = getAppKeywords(app.id);
 
-		const term = searchTerm.toLowerCase().trim();
-		if (!term) return apps;
+		for (const term of searchTerms) {
+			const termLower = term.toLowerCase();
 
-		console.log('Filtering apps with term:', term);
+			// Exact name match (highest priority)
+			if (name === termLower) score += 100;
+			// Name starts with term (high priority)
+			else if (name.startsWith(termLower)) score += 80;
+			// Name contains term (medium-high priority)
+			else if (name.includes(termLower)) score += 60;
 
-		return apps.filter((app) => {
-			const nameMatch = app.name.toLowerCase().includes(term);
-			const idMatch = app.id.toLowerCase().includes(term);
-			const wordMatch = app.name
-				.toLowerCase()
-				.split(' ')
-				.some((word) => word.startsWith(term));
-			const keywordMatch = getAppKeywords(app.id).some((keyword) =>
-				keyword.toLowerCase().includes(term)
-			);
+			// Word boundary matches in name
+			const nameWords = name.split(/[\s-_]/);
+			for (const word of nameWords) {
+				if (word.startsWith(termLower)) score += 50;
+				else if (word.includes(termLower)) score += 30;
+			}
 
-			return nameMatch || idMatch || wordMatch || keywordMatch;
-		});
+			// ID matches
+			if (id.includes(termLower)) score += 40;
+
+			// Category matches
+			if (category.includes(termLower)) score += 35;
+
+			// Description matches
+			if (description.includes(termLower)) score += 25;
+
+			// Keyword matches
+			for (const keyword of keywords) {
+				if (keyword.toLowerCase().includes(termLower)) {
+					score += keyword.toLowerCase().startsWith(termLower) ? 45 : 20;
+				}
+			}
+
+			// Fuzzy matching for typos (basic implementation)
+			if (termLower.length > 2) {
+				for (const word of [...nameWords, ...keywords]) {
+					if (calculateLevenshteinDistance(termLower, word.toLowerCase()) <= 1) {
+						score += 15;
+					}
+				}
+			}
+		}
+
+		return score;
+	}
+
+	// Simple Levenshtein distance for fuzzy matching
+	function calculateLevenshteinDistance(a, b) {
+		if (a.length === 0) return b.length;
+		if (b.length === 0) return a.length;
+
+		const matrix = Array(b.length + 1)
+			.fill(null)
+			.map(() => Array(a.length + 1).fill(null));
+
+		for (let i = 0; i <= a.length; i++) matrix[0][i] = i;
+		for (let j = 0; j <= b.length; j++) matrix[j][0] = j;
+
+		for (let j = 1; j <= b.length; j++) {
+			for (let i = 1; i <= a.length; i++) {
+				const indicator = a[i - 1] === b[j - 1] ? 0 : 1;
+				matrix[j][i] = Math.min(
+					matrix[j][i - 1] + 1,
+					matrix[j - 1][i] + 1,
+					matrix[j - 1][i - 1] + indicator
+				);
+			}
+		}
+
+		return matrix[b.length][a.length];
+	}
+
+	// Function to update search duration
+	function updateSearchDuration() {
+		if (searchStartTime > 0) {
+			lastSearchDuration = performance.now() - searchStartTime;
+			searchStartTime = 0;
+		}
+	}
+
+	// Enhanced filtered apps with scoring
+	const filteredApps = $derived.by(() => {
+		if (!debouncedSearchTerm.trim()) {
+			return apps;
+		}
+
+		const searchTerms = debouncedSearchTerm
+			.trim()
+			.split(/\s+/)
+			.filter((term) => term.length > 0);
+
+		return apps
+			.map((app) => ({
+				...app,
+				searchScore: calculateSearchScore(app, searchTerms)
+			}))
+			.filter((app) => app.searchScore > 0)
+			.sort((a, b) => b.searchScore - a.searchScore);
 	});
 
-	// Helper function to provide additional keywords for each app
+	// Enhanced keywords with more comprehensive coverage
 	function getAppKeywords(appId) {
 		const keywords = {
-			'file-explorer': ['files', 'folder', 'browse', 'directory', 'explorer', 'file manager'],
-			'text-editor': ['text', 'edit', 'write', 'document', 'note', 'code'],
-			terminal: ['console', 'command', 'shell', 'bash', 'cli'],
-			calculator: ['calc', 'math', 'numbers', 'arithmetic'],
-			'image-viewer': ['image', 'picture', 'photo', 'view', 'gallery'],
-			'system-monitor': ['system', 'monitor', 'performance', 'task', 'process', 'resource'],
-			settings: ['config', 'preferences', 'options', 'setup'],
-			'web-browser': ['browser', 'web', 'internet', 'surf', 'firefox', 'chrome'],
-			'music-player': ['music', 'audio', 'sound', 'player', 'mp3', 'media']
+			'file-explorer': [
+				'files',
+				'folder',
+				'browse',
+				'directory',
+				'explorer',
+				'file manager',
+				'finder',
+				'nautilus',
+				'documents'
+			],
+			'text-editor': [
+				'text',
+				'edit',
+				'write',
+				'document',
+				'note',
+				'code',
+				'editor',
+				'notepad',
+				'vim',
+				'nano'
+			],
+			terminal: [
+				'console',
+				'command',
+				'shell',
+				'bash',
+				'cli',
+				'cmd',
+				'powershell',
+				'zsh',
+				'terminal'
+			],
+			calculator: ['calc', 'math', 'numbers', 'arithmetic', 'compute', 'calculate', 'mathematics'],
+			'image-viewer': [
+				'image',
+				'picture',
+				'photo',
+				'view',
+				'gallery',
+				'jpeg',
+				'png',
+				'gif',
+				'viewer'
+			],
+			'system-monitor': [
+				'system',
+				'monitor',
+				'performance',
+				'task',
+				'process',
+				'resource',
+				'cpu',
+				'memory',
+				'ram'
+			],
+			settings: [
+				'config',
+				'preferences',
+				'options',
+				'setup',
+				'configuration',
+				'control panel',
+				'system'
+			],
+			'web-browser': [
+				'browser',
+				'web',
+				'internet',
+				'surf',
+				'firefox',
+				'chrome',
+				'safari',
+				'edge',
+				'www'
+			],
+			'music-player': [
+				'music',
+				'audio',
+				'sound',
+				'player',
+				'mp3',
+				'media',
+				'spotify',
+				'itunes',
+				'song'
+			]
 		};
 		return keywords[appId] || [];
 	}
 
-	// Helper function to highlight search matches
+	// Enhanced highlighting with better regex handling
 	function highlightMatch(text, searchTerm) {
 		if (!searchTerm.trim()) return text;
-		const regex = new RegExp(`(${searchTerm.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-		return text.replace(
-			regex,
-			'<mark class="bg-yellow-300/30 text-yellow-100 rounded px-1">$1</mark>'
-		);
+
+		const terms = searchTerm.trim().split(/\s+/);
+		let highlightedText = text;
+
+		for (const term of terms) {
+			if (term.length > 0) {
+				const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+				const regex = new RegExp(`(${escapedTerm})`, 'gi');
+				highlightedText = highlightedText.replace(
+					regex,
+					'<mark class="bg-yellow-300/40 text-yellow-100 rounded px-1 font-semibold">$1</mark>'
+				);
+			}
+		}
+
+		return highlightedText;
 	}
 
-	// Handle keyboard events for search
+	// Enhanced keyboard handling
 	function handleKeydown(event) {
 		if (showAppMenu) {
 			if (event.key === 'Escape') {
 				toggleAppMenu();
 			} else if (event.key === 'Enter' && filteredApps.length > 0) {
 				launchApp(filteredApps[0]);
+			} else if (event.key === 'ArrowDown' && searchInput) {
+				// Future: implement keyboard navigation through results
+				event.preventDefault();
 			}
+		}
+	}
+
+	// Clear search function
+	function clearSearch() {
+		searchTerm = '';
+		debouncedSearchTerm = '';
+		if (searchInput) {
+			searchInput.focus();
+		}
+	}
+
+	// Search suggestions based on popular terms
+	const searchSuggestions = [
+		'calculator',
+		'files',
+		'terminal',
+		'browser',
+		'settings',
+		'music',
+		'images'
+	];
+
+	function applySuggestion(suggestion) {
+		searchTerm = suggestion;
+		debouncedSearchTerm = suggestion;
+		if (searchInput) {
+			searchInput.focus();
 		}
 	}
 
@@ -185,7 +427,7 @@
 			monitor:
 				'<g><rect x="2" y="3" width="20" height="14" rx="2" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="21" width="8" height="2" rx="1" fill="currentColor" opacity="0.6"/><line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" stroke-width="2"/><g stroke="currentColor" stroke-width="1" opacity="0.6"><line x1="6" y1="7" x2="18" y2="7"/><line x1="6" y1="9" x2="16" y2="9"/><line x1="6" y1="11" x2="14" y2="11"/><line x1="6" y1="13" x2="12" y2="13"/></g></g>',
 			settings:
-				'<g><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/></g>',
+				'<g><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/></g>',
 			browser:
 				'<g><rect x="2" y="3" width="20" height="18" rx="2" fill="currentColor" opacity="0.1" stroke="currentColor" stroke-width="1.5"/><line x1="2" y1="9" x2="22" y2="9" stroke="currentColor" stroke-width="1.5"/><circle cx="6.5" cy="6" r="1" fill="currentColor" opacity="0.6"/><circle cx="9.5" cy="6" r="1" fill="currentColor" opacity="0.6"/><circle cx="12.5" cy="6" r="1" fill="currentColor" opacity="0.6"/><rect x="6" y="13" width="12" height="2" rx="1" fill="currentColor" opacity="0.4"/><rect x="6" y="16" width="8" height="2" rx="1" fill="currentColor" opacity="0.4"/></g>',
 			music:
@@ -196,7 +438,7 @@
 	}
 
 	// Reactive theme classes with enhanced styling
-	const dockClasses = $derived(() => {
+	const dockClasses = $derived.by(() => {
 		const baseClasses =
 			'fixed bottom-4 left-1/2 transform -translate-x-1/2 z-50 flex h-16 flex-row items-center justify-center px-4 backdrop-blur-2xl border shadow-2xl rounded-2xl transition-all duration-300';
 		const themeClasses =
@@ -206,7 +448,7 @@
 		return `${baseClasses} ${themeClasses}`;
 	});
 
-	const appButtonClasses = $derived(() => {
+	const appButtonClasses = $derived.by(() => {
 		const baseClasses =
 			'group relative mx-1.5 flex h-12 w-12 items-center justify-center rounded-xl transition-all duration-300 hover:scale-125 active:scale-105 hover:-translate-y-2 hover:shadow-lg';
 		const themeClasses =
@@ -216,7 +458,7 @@
 		return `${baseClasses} ${themeClasses}`;
 	});
 
-	const iconClasses = $derived(() => {
+	const iconClasses = $derived.by(() => {
 		const baseClasses = 'h-6 w-6 transition-all duration-300 group-hover:scale-110';
 		const themeClasses =
 			desktopState.currentTheme === 'light'
@@ -225,7 +467,7 @@
 		return `${baseClasses} ${themeClasses}`;
 	});
 
-	const tooltipClasses = $derived(() => {
+	const tooltipClasses = $derived.by(() => {
 		const baseClasses =
 			'pointer-events-none absolute bottom-16 left-1/2 transform -translate-x-1/2 rounded-xl px-3 py-2 text-xs font-semibold whitespace-nowrap opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-2 shadow-xl backdrop-blur-lg border z-10';
 		const themeClasses =
@@ -235,13 +477,13 @@
 		return `${baseClasses} ${themeClasses}`;
 	});
 
-	const separatorClasses = $derived(() => {
+	const separatorClasses = $derived.by(() => {
 		const baseClasses = 'h-8 w-px mx-2 rounded-full';
 		const themeClasses = desktopState.currentTheme === 'light' ? 'bg-white/40' : 'bg-white/25';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
-	const runningIndicatorClasses = $derived(() => {
+	const runningIndicatorClasses = $derived.by(() => {
 		const baseClasses = 'h-1 w-1 rounded-full transition-all duration-200 hover:scale-150';
 		const themeClasses =
 			desktopState.currentTheme === 'light'
@@ -253,34 +495,38 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class={dockClasses()}>
+<div class={dockClasses}>
 	<!-- Show All Apps Button -->
-	<button class={appButtonClasses()} onclick={toggleAppMenu}>
-		<svg class={iconClasses()} viewBox="0 0 24 24" fill="currentColor">
+	<button class={appButtonClasses} onclick={toggleAppMenu} aria-label="Show All Apps">
+		<svg class={iconClasses} viewBox="0 0 24 24" fill="currentColor">
 			{@html getIconSvg('grid')}
 		</svg>
 		<!-- Tooltip -->
-		<div class={tooltipClasses()}>Show All Apps</div>
+		<div class={tooltipClasses}>Show All Apps</div>
 	</button>
 
 	<!-- Separator -->
-	<div class={separatorClasses()}></div>
+	<div class={separatorClasses}></div>
 
 	<!-- App Icons -->
 	{#each apps as app}
-		<button class={appButtonClasses()} onclick={() => launchApp(app)}>
-			<svg class={iconClasses()} viewBox="0 0 24 24" fill="currentColor">
+		<button
+			class={appButtonClasses}
+			onclick={() => launchApp(app)}
+			aria-label={`Launch ${app.name}`}
+		>
+			<svg class={iconClasses} viewBox="0 0 24 24" fill="currentColor">
 				{@html getIconSvg(app.icon)}
 			</svg>
 			<!-- Tooltip -->
-			<div class={tooltipClasses()}>{app.name}</div>
+			<div class={tooltipClasses}>{app.name}</div>
 		</button>
 	{/each}
 
 	<!-- Running Applications Indicator -->
 	{#if desktopState.windows.length > 0}
 		<!-- Separator -->
-		<div class={separatorClasses()}></div>
+		<div class={separatorClasses}></div>
 
 		<div class="flex flex-row items-center space-x-3 px-2">
 			{#each desktopState.windows as window}
@@ -289,7 +535,7 @@
 					onclick={() => desktopState.setActiveWindow(window.id)}
 					aria-label={`Switch to ${window.name}`}
 				>
-					<div class={runningIndicatorClasses()}></div>
+					<div class={runningIndicatorClasses}></div>
 					<div
 						class="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-lg px-2 py-1 text-xs font-medium whitespace-nowrap opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100 {desktopState.currentTheme ===
 						'light'
@@ -308,17 +554,30 @@
 {#if showAppMenu}
 	<div
 		class="fixed inset-0 z-40 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+		role="presentation"
 		onclick={toggleAppMenu}
+		onkeydown={handleKeydown}
 	>
 		<div
-			class="mx-6 max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl border border-white/20 bg-black/30 p-8 shadow-2xl backdrop-blur-xl"
+			class="mx-6 max-h-[80vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-white/20 bg-black/30 p-6 shadow-2xl backdrop-blur-xl"
 			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-label="All Applications"
+			tabindex="-1"
 		>
 			<div class="mb-8 flex items-center justify-between">
-				<h2 class="text-3xl font-bold text-white">All Applications</h2>
+				<div>
+					<h2 class="text-3xl font-bold text-white">All Applications</h2>
+					{#if lastSearchDuration > 0}
+						<p class="mt-1 text-sm text-white/60">
+							Search completed in {lastSearchDuration.toFixed(1)}ms
+						</p>
+					{/if}
+				</div>
 				<button
 					class="rounded-xl p-3 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
 					onclick={toggleAppMenu}
+					aria-label="Close"
 				>
 					<svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path
@@ -331,7 +590,7 @@
 				</button>
 			</div>
 
-			<!-- Search Bar -->
+			<!-- Enhanced Search Bar -->
 			<div class="mb-8">
 				<div class="relative">
 					<svg
@@ -352,14 +611,14 @@
 						value={searchTerm}
 						oninput={updateSearchTerm}
 						bind:this={searchInput}
-						placeholder="Search applications..."
-						class="w-full rounded-2xl border border-white/20 bg-white/10 py-4 pr-12 pl-12 text-white placeholder-white/40 backdrop-blur-sm transition-all duration-200 focus:border-transparent focus:ring-2 focus:ring-blue-400 focus:outline-none"
+						placeholder="Search applications... (try 'calc', 'files', or 'browser')"
+						class="w-full rounded-2xl border border-white/20 bg-white/10 py-4 pr-12 pl-12 text-white placeholder-white/40 backdrop-blur-sm transition-all duration-200 focus:border-blue-400/50 focus:ring-2 focus:ring-blue-400/30 focus:outline-none"
 						autocomplete="off"
 					/>
 					{#if searchTerm.trim()}
 						<button
 							class="absolute top-1/2 right-4 h-5 w-5 -translate-y-1/2 transform text-white/40 transition-colors hover:text-white/80"
-							onclick={() => (searchTerm = '')}
+							onclick={clearSearch}
 							aria-label="Clear search"
 						>
 							<svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,20 +632,33 @@
 						</button>
 					{/if}
 				</div>
-				{#if searchTerm.trim() && filteredApps.length > 0}
-					<div class="mt-2 text-center text-sm text-white/60">
-						Press Enter to open "{filteredApps[0].name}"
+
+				<!-- Search Status and Shortcuts -->
+				<div class="mt-3 flex items-center justify-between text-sm">
+					<div class="text-white/60">
+						{#if debouncedSearchTerm.trim() && filteredApps.length > 0}
+							Press Enter to open "{filteredApps[0].name}"
+						{:else if debouncedSearchTerm.trim()}
+							No results found
+						{:else}
+							Type to search through {apps.length} applications
+						{/if}
 					</div>
-				{/if}
+					<div class="text-xs text-white/40">ESC to close • ↵ to open first result</div>
+				</div>
 			</div>
 
 			<!-- Apps Grid -->
 			{#if filteredApps.length > 0}
-				<div class="grid grid-cols-4 gap-6">
-					{#each filteredApps as app}
+				<div class="grid grid-cols-2 gap-4 md:grid-cols-2 lg:grid-cols-3">
+					{#each filteredApps as app, index}
 						<button
-							class="group flex flex-col items-center space-y-4 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:border-white/30 hover:bg-white/20 active:scale-95"
+							class="group flex flex-col items-center space-y-4 rounded-2xl border border-white/10 bg-white/10 p-6 backdrop-blur-sm transition-all duration-200 hover:scale-105 hover:border-white/30 hover:bg-white/20 active:scale-95 {index ===
+								0 && debouncedSearchTerm.trim()
+								? 'ring-2 ring-blue-400/50'
+								: ''}"
 							onclick={() => launchApp(app)}
+							aria-label={`Launch ${app.name}`}
 						>
 							<div class="text-5xl transition-transform duration-200 group-hover:scale-110">
 								{#if app.icon === 'folder'}📁
@@ -400,9 +672,19 @@
 								{:else if app.icon === 'music'}🎵
 								{:else}📱{/if}
 							</div>
-							<span class="text-center text-sm leading-tight font-medium text-white">
-								{@html highlightMatch(app.name, searchTerm)}
-							</span>
+							<div class="text-center">
+								<div class="mb-1 text-sm leading-tight font-medium text-white">
+									{@html highlightMatch(app.name, debouncedSearchTerm)}
+								</div>
+								<div class="text-xs leading-tight text-white/60">
+									{app.category}
+								</div>
+								{#if debouncedSearchTerm.trim() && app.searchScore}
+									<div class="mt-1 text-xs text-blue-400/80">
+										Score: {app.searchScore}
+									</div>
+								{/if}
+							</div>
 						</button>
 					{/each}
 				</div>
@@ -411,33 +693,37 @@
 					<div class="mb-6 text-8xl text-white/30">🔍</div>
 					<h3 class="mb-3 text-xl font-medium text-white">No applications found</h3>
 					<p class="mb-4 text-base text-white/60">Try searching for:</p>
-					<div class="mb-4 flex flex-wrap justify-center gap-2">
-						{#each ['calculator', 'files', 'terminal', 'browser', 'settings'] as suggestion}
+					<div class="mb-6 flex flex-wrap justify-center gap-2">
+						{#each searchSuggestions as suggestion}
 							<button
-								onclick={() => {
-									searchTerm = suggestion;
-									setTimeout(() => {
-										if (searchInput) {
-											searchInput.focus();
-										}
-									}, 100);
-								}}
+								class="rounded-lg bg-white/10 px-3 py-2 text-sm text-white/80 transition-colors hover:bg-white/20 hover:text-white"
+								onclick={() => applySuggestion(suggestion)}
+								aria-label={`Apply suggestion: ${suggestion}`}
 							>
 								{suggestion}
 							</button>
 						{/each}
 					</div>
-					<p class="text-sm text-white/40">or try adjusting your search terms</p>
+					<div class="space-y-1 text-sm text-white/40">
+						<p>• Use keywords like "calc" for Calculator</p>
+						<p>• Try partial matches like "term" for Terminal</p>
+						<p>• Search by category like "media" or "system"</p>
+					</div>
 				</div>
 			{/if}
 
-			<!-- Quick Info -->
+			<!-- Enhanced Quick Info -->
 			<div class="mt-8 border-t border-white/20 pt-6">
-				<div class="text-center text-sm text-white/60">
-					{#if searchTerm.trim()}
-						{filteredApps.length} of {apps.length} applications
-					{:else}
-						{apps.length} applications available
+				<div class="flex items-center justify-between text-sm text-white/60">
+					<div>
+						{#if debouncedSearchTerm.trim()}
+							{filteredApps.length} of {apps.length} applications match "{debouncedSearchTerm}"
+						{:else}
+							{apps.length} applications available
+						{/if}
+					</div>
+					{#if debouncedSearchTerm.trim() && filteredApps.length > 0}
+						<div class="text-xs text-white/40">Sorted by relevance</div>
 					{/if}
 				</div>
 			</div>
