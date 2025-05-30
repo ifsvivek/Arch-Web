@@ -41,29 +41,246 @@
 	function dismissNotification(id) {
 		notifications = notifications.filter((n) => n.id !== id);
 	}
+
+	// Reactive theme classes
+	const topBarClasses = $derived(() => {
+		const baseClasses = "fixed top-0 right-0 left-0 z-50 flex h-8 items-center justify-between px-4 select-none";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'bg-gray-100 text-gray-900' 
+			: 'bg-gray-900 text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const buttonClasses = $derived(() => {
+		const baseClasses = "rounded px-3 py-1 text-sm transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'hover:bg-gray-200' 
+			: 'hover:bg-gray-700';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const clockButtonClasses = $derived(() => {
+		const baseClasses = "flex flex-col items-center rounded px-2 py-1 text-xs leading-tight transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'hover:bg-gray-200' 
+			: 'hover:bg-gray-700';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const timeTextClasses = $derived(() => {
+		const baseClasses = "font-medium";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-900' 
+			: 'text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const dateTextClasses = $derived(() => {
+		const baseClasses = "text-xs";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-600' 
+			: 'text-gray-300';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const iconClasses = $derived(() => {
+		const baseClasses = "h-4 w-4 cursor-pointer transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-600 hover:text-gray-900' 
+			: 'text-gray-300 hover:text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const notificationIconClasses = $derived(() => {
+		const baseClasses = "relative h-4 w-4 cursor-pointer transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-600 hover:text-gray-900' 
+			: 'text-gray-300 hover:text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuButtonClasses = $derived(() => {
+		const baseClasses = "flex h-6 w-6 items-center justify-center rounded-full transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'bg-gray-300 hover:bg-gray-400' 
+			: 'bg-gray-600 hover:bg-gray-500';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const dropdownClasses = $derived(() => {
+		const baseClasses = "absolute top-8 right-0 z-50 w-80 rounded-lg border p-4 shadow-xl";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-gray-300 bg-white' 
+			: 'border-gray-600 bg-gray-800';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const dropdownHeaderClasses = $derived(() => {
+		const baseClasses = "text-sm font-semibold";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-900' 
+			: 'text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const dropdownButtonClasses = $derived(() => {
+		const baseClasses = "text-xs transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-600 hover:text-gray-900' 
+			: 'text-gray-400 hover:text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const emptyStateClasses = $derived(() => {
+		const baseClasses = "py-4 text-center text-sm";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-500' 
+			: 'text-gray-400';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const notificationItemClasses = $derived(() => {
+		const baseClasses = "flex items-start justify-between rounded p-3";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'bg-gray-100' 
+			: 'bg-gray-700';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const notificationTitleClasses = $derived(() => {
+		const baseClasses = "text-sm font-medium";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-900' 
+			: 'text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const notificationTextClasses = $derived(() => {
+		const baseClasses = "text-xs";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-600' 
+			: 'text-gray-300';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const notificationTimeClasses = $derived(() => {
+		const baseClasses = "mt-1 text-xs";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-500' 
+			: 'text-gray-400';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const systemMenuClasses = $derived(() => {
+		const baseClasses = "absolute top-8 right-0 z-50 w-64 rounded-lg border p-4 shadow-xl";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-gray-300 bg-white' 
+			: 'border-gray-600 bg-gray-800';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const systemMenuTextClasses = $derived(() => {
+		const baseClasses = "text-sm";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-900' 
+			: 'text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const systemMenuSubtextClasses = $derived(() => {
+		const baseClasses = "text-xs";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-500' 
+			: 'text-gray-400';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const dividerClasses = $derived(() => {
+		const baseClasses = "";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-gray-300' 
+			: 'border-gray-600';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const sliderClasses = $derived(() => {
+		const baseClasses = "h-1 w-full appearance-none rounded-lg";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'bg-gray-300' 
+			: 'bg-gray-600';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuClasses = $derived(() => {
+		const baseClasses = "absolute top-8 right-0 z-50 w-48 rounded-lg border p-2 shadow-xl";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-gray-300 bg-white' 
+			: 'border-gray-600 bg-gray-800';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuHeaderClasses = $derived(() => {
+		const baseClasses = "mb-2 border-b px-3 py-2";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-gray-300' 
+			: 'border-gray-600';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuUsernameClasses = $derived(() => {
+		const baseClasses = "text-sm font-semibold";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-900' 
+			: 'text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuOSClasses = $derived(() => {
+		const baseClasses = "text-xs";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-500' 
+			: 'text-gray-400';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuItemClasses = $derived(() => {
+		const baseClasses = "w-full rounded px-3 py-2 text-left text-sm transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-900 hover:bg-gray-100' 
+			: 'text-white hover:bg-gray-700';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const userMenuDangerButtonClasses = $derived(() => {
+		const baseClasses = "w-full rounded px-3 py-2 text-left text-sm text-red-400 transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'hover:bg-gray-100' 
+			: 'hover:bg-gray-700';
+		return `${baseClasses} ${themeClasses}`;
+	});
 </script>
 
 <svelte:window onclick={closeAllMenus} />
 
 <div
-	class="fixed top-0 right-0 left-0 z-50 flex h-8 items-center justify-between bg-gray-900 px-4 text-white select-none"
+	class={topBarClasses()}
 >
 	<!-- Activities Button -->
 	<button
-		class="rounded px-3 py-1 text-sm transition-colors hover:bg-gray-700"
+		class={buttonClasses()}
 		onclick={handleActivities}
 	>
 		Activities
 	</button>
 
 	<!-- Center - Clock -->  <button
-    class="flex flex-col items-center rounded px-2 py-1 text-xs leading-tight transition-colors hover:bg-gray-700"
+    class={clockButtonClasses()}
     onclick={(e) => { e.stopPropagation(); toggleNotifications(); }}
   >
-		<div class="font-medium text-white">
+		<div class={timeTextClasses()}>
 			{desktopState.formattedTime}
 		</div>
-		<div class="text-xs text-gray-300">
+		<div class={dateTextClasses()}>
 			{desktopState.formattedDate}
 		</div>
 	</button>
@@ -73,7 +290,7 @@
 		<!-- Notifications -->
 		{#if notifications.length > 0}
 			<button
-				class="relative h-4 w-4 cursor-pointer text-gray-300 hover:text-white"
+				class={notificationIconClasses()}
 				onclick={(e) => { e.stopPropagation(); toggleNotifications(); }}
 			>
 				<svg viewBox="0 0 24 24" fill="currentColor">
@@ -87,7 +304,7 @@
 
 		<!-- Network Icon -->
 		<button
-			class="h-4 w-4 cursor-pointer text-gray-300 hover:text-white"
+			class={iconClasses()}
 			onclick={(e) => { e.stopPropagation(); toggleSystemMenu(); }}
 		>
 			<svg viewBox="0 0 24 24" fill="currentColor">
@@ -98,7 +315,7 @@
 		</button>
 
 		<!-- Volume Icon -->
-		<div class="h-4 w-4 cursor-pointer text-gray-300 hover:text-white">
+		<div class={iconClasses()}>
 			<svg viewBox="0 0 24 24" fill="currentColor">
 				<path
 					d="M3 10v4c0 .55.45 1 1 1h3l3.29 3.29c.63.63 1.71.18 1.71-.71V6.41c0-.89-1.08-1.34-1.71-.71L7 9H4c-.55 0-1 .45-1 1zm13.5 2A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02z"
@@ -107,7 +324,7 @@
 		</div>
 
 		<!-- Battery Icon -->
-		<div class="h-4 w-4 cursor-pointer text-gray-300 hover:text-white">
+		<div class={iconClasses()}>
 			<svg viewBox="0 0 24 24" fill="currentColor">
 				<path
 					d="M15.67 4H14V2c0-1.1-.9-2-2-2s-2 .9-2 2v2H8.33C7.6 4 7 4.6 7 5.33v15.33C7 21.4 7.6 22 8.33 22h7.33c.74 0 1.34-.6 1.34-1.33V5.33C17 4.6 16.4 4 15.67 4z"
@@ -117,7 +334,7 @@
 
 		<!-- User Menu -->
 		<button
-			class="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 transition-colors hover:bg-gray-500"
+			class={userMenuButtonClasses()}
 			onclick={(e) => { e.stopPropagation(); toggleUserMenu(); }}
 		>
 			<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -130,30 +347,30 @@
 		<!-- Notification Panel -->
 		{#if showNotifications}
 			<div
-				class="absolute top-8 right-0 z-50 w-80 rounded-lg border border-gray-600 bg-gray-800 p-4 shadow-xl"
+				class={dropdownClasses()}
 			>
 				<div class="mb-3 flex items-center justify-between">
-					<h3 class="text-sm font-semibold">Notifications</h3>
+					<h3 class={dropdownHeaderClasses()}>Notifications</h3>
 					<button
-						class="text-xs text-gray-400 hover:text-white"
+						class={dropdownButtonClasses()}
 						onclick={() => (notifications = [])}
 					>
 						Clear All
 					</button>
 				</div>
 				{#if notifications.length === 0}
-					<div class="py-4 text-center text-sm text-gray-400">No notifications</div>
+					<div class={emptyStateClasses()}>No notifications</div>
 				{:else}
 					<div class="space-y-2">
 						{#each notifications as notification}
-							<div class="flex items-start justify-between rounded bg-gray-700 p-3">
+							<div class={notificationItemClasses()}>
 								<div class="flex-1">
-									<div class="text-sm font-medium">{notification.title}</div>
-									<div class="text-xs text-gray-300">{notification.message}</div>
-									<div class="mt-1 text-xs text-gray-400">{notification.time}</div>
+									<div class={notificationTitleClasses()}>{notification.title}</div>
+									<div class={notificationTextClasses()}>{notification.message}</div>
+									<div class={notificationTimeClasses()}>{notification.time}</div>
 								</div>
 								<button
-									class="text-gray-400 hover:text-white"
+									class={dropdownButtonClasses()}
 									onclick={() => dismissNotification(notification.id)}
 								>
 									<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -172,47 +389,47 @@
 		<!-- System Menu -->
 		{#if showSystemMenu}
 			<div
-				class="absolute top-8 right-0 z-50 w-64 rounded-lg border border-gray-600 bg-gray-800 p-4 shadow-xl"
+				class={systemMenuClasses()}
 			>
 				<div class="space-y-3">
 					<div class="flex items-center justify-between">
-						<span class="text-sm">WiFi</span>
+						<span class={systemMenuTextClasses()}>WiFi</span>
 						<div class="flex items-center text-green-400">
 							<div class="mr-2 h-2 w-2 rounded-full bg-green-400"></div>
 							<span class="text-xs">Connected</span>
 						</div>
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-sm">Bluetooth</span>
+						<span class={systemMenuTextClasses()}>Bluetooth</span>
 						<div class="flex items-center text-gray-400">
 							<div class="mr-2 h-2 w-2 rounded-full bg-gray-400"></div>
 							<span class="text-xs">Off</span>
 						</div>
 					</div>
 					<div class="flex items-center justify-between">
-						<span class="text-sm">Do Not Disturb</span>
+						<span class={systemMenuTextClasses()}>Do Not Disturb</span>
 						<button class="relative h-4 w-8 rounded-full bg-gray-600">
 							<div class="absolute top-0.5 left-0.5 h-3 w-3 rounded-full bg-white"></div>
 						</button>
 					</div>
-					<hr class="border-gray-600" />
+					<hr class={dividerClasses()} />
 					<div class="space-y-2">
 						<div class="flex items-center justify-between text-sm">
-							<span>Brightness</span>
-							<span class="text-xs text-gray-400">75%</span>
+							<span class={systemMenuTextClasses()}>Brightness</span>
+							<span class={systemMenuSubtextClasses()}>75%</span>
 						</div>
 						<input
 							type="range"
-							class="h-1 w-full appearance-none rounded-lg bg-gray-600"
+							class={sliderClasses()}
 							value="75"
 						/>
 						<div class="flex items-center justify-between text-sm">
-							<span>Volume</span>
-							<span class="text-xs text-gray-400">80%</span>
+							<span class={systemMenuTextClasses()}>Volume</span>
+							<span class={systemMenuSubtextClasses()}>80%</span>
 						</div>
 						<input
 							type="range"
-							class="h-1 w-full appearance-none rounded-lg bg-gray-600"
+							class={sliderClasses()}
 							value="80"
 						/>
 					</div>
@@ -223,27 +440,27 @@
 		<!-- User Menu -->
 		{#if showUserMenu}
 			<div
-				class="absolute top-8 right-0 z-50 w-48 rounded-lg border border-gray-600 bg-gray-800 p-2 shadow-xl"
+				class={userMenuClasses()}
 			>
-				<div class="mb-2 border-b border-gray-600 px-3 py-2">
-					<div class="text-sm font-semibold">archuser</div>
-					<div class="text-xs text-gray-400">Arch Linux</div>
+				<div class={userMenuHeaderClasses()}>
+					<div class={userMenuUsernameClasses()}>archuser</div>
+					<div class={userMenuOSClasses()}>Arch Linux</div>
 				</div>
 				<div class="space-y-1">
-					<button class="w-full rounded px-3 py-2 text-left text-sm hover:bg-gray-700"
+					<button class={userMenuItemClasses()}
 						>Settings</button
 					>
-					<button class="w-full rounded px-3 py-2 text-left text-sm hover:bg-gray-700"
+					<button class={userMenuItemClasses()}
 						>Lock Screen</button
 					>
-					<button class="w-full rounded px-3 py-2 text-left text-sm hover:bg-gray-700"
+					<button class={userMenuItemClasses()}
 						>Switch User</button
 					>
-					<hr class="my-2 border-gray-600" />
-					<button class="w-full rounded px-3 py-2 text-left text-sm text-red-400 hover:bg-gray-700"
+					<hr class={`my-2 ${dividerClasses()}`} />
+					<button class={userMenuDangerButtonClasses()}
 						>Log Out</button
 					>
-					<button class="w-full rounded px-3 py-2 text-left text-sm text-red-400 hover:bg-gray-700"
+					<button class={userMenuDangerButtonClasses()}
 						>Shutdown</button
 					>
 				</div>

@@ -3,25 +3,6 @@
 	import { desktopState } from '$lib/stores/desktop.svelte.js';
 	
 	let activeTab = $state('appearance');
-	let settings = $state({
-		appearance: {
-			theme: 'dark',
-			wallpaper: 'arch-nz',
-			iconTheme: 'papirus',
-			fontSize: 14
-		},
-		system: {
-			autologin: false,
-			showNotifications: true,
-			soundEnabled: true,
-			animationsEnabled: true
-		},
-		network: {
-			wifi: true,
-			ethernet: false,
-			proxy: false
-		}
-	});
 
 	const tabs = [
 		{ id: 'appearance', name: 'Appearance', icon: 'palette' },
@@ -31,17 +12,89 @@
 	];
 
 	const wallpapers = [
-		{ id: 'arch-nz', name: 'Arch NZ', preview: 'url(https://roboticoverlords.org/wallpapers/arch_nz.png)' },
-		{ id: 'arch-blue', name: 'Arch Blue', preview: '#1e3a8a' },
-		{ id: 'arch-purple', name: 'Arch Purple', preview: '#7c3aed' },
-		{ id: 'minimal-dark', name: 'Minimal Dark', preview: '#111827' },
-		{ id: 'gradient', name: 'Gradient', preview: 'linear-gradient(45deg, #1e3a8a, #7c3aed)' }
+		{ id: 'arch-nz', name: 'Arch NZ', preview: "background-image: url('/arch_wallpaper.png'); background-size: cover; background-position: center; background-repeat: no-repeat" },
+		{ id: 'arch-blue', name: 'Arch Blue', preview: 'background: #1e3a8a' },
+		{ id: 'arch-purple', name: 'Arch Purple', preview: 'background: #7c3aed' },
+		{ id: 'minimal-dark', name: 'Minimal Dark', preview: 'background: #111827' },
+		{ id: 'gradient', name: 'Gradient', preview: 'background: linear-gradient(45deg, #1e3a8a, #7c3aed)' }
 	];
 
+	// Reactive effects to auto-save settings when they change
+	let previousTheme = $state(desktopState.settings.appearance.theme);
+	let previousFontSize = $state(desktopState.settings.appearance.fontSize);
+	let previousAutologin = $state(desktopState.settings.system.autologin);
+	let previousNotifications = $state(desktopState.settings.system.showNotifications);
+	let previousSound = $state(desktopState.settings.system.soundEnabled);
+	let previousAnimations = $state(desktopState.settings.system.animationsEnabled);
+	let previousWifi = $state(desktopState.settings.network.wifi);
+	let previousEthernet = $state(desktopState.settings.network.ethernet);
+	let previousProxy = $state(desktopState.settings.network.proxy);
+
+	$effect(() => {
+		if (desktopState.settings.appearance.theme !== previousTheme) {
+			previousTheme = desktopState.settings.appearance.theme;
+			desktopState.setTheme(desktopState.settings.appearance.theme);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.appearance.fontSize !== previousFontSize) {
+			previousFontSize = desktopState.settings.appearance.fontSize;
+			desktopState.updateSetting('appearance', 'fontSize', desktopState.settings.appearance.fontSize);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.system.autologin !== previousAutologin) {
+			previousAutologin = desktopState.settings.system.autologin;
+			desktopState.updateSetting('system', 'autologin', desktopState.settings.system.autologin);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.system.showNotifications !== previousNotifications) {
+			previousNotifications = desktopState.settings.system.showNotifications;
+			desktopState.updateSetting('system', 'showNotifications', desktopState.settings.system.showNotifications);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.system.soundEnabled !== previousSound) {
+			previousSound = desktopState.settings.system.soundEnabled;
+			desktopState.updateSetting('system', 'soundEnabled', desktopState.settings.system.soundEnabled);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.system.animationsEnabled !== previousAnimations) {
+			previousAnimations = desktopState.settings.system.animationsEnabled;
+			desktopState.updateSetting('system', 'animationsEnabled', desktopState.settings.system.animationsEnabled);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.network.wifi !== previousWifi) {
+			previousWifi = desktopState.settings.network.wifi;
+			desktopState.updateSetting('network', 'wifi', desktopState.settings.network.wifi);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.network.ethernet !== previousEthernet) {
+			previousEthernet = desktopState.settings.network.ethernet;
+			desktopState.updateSetting('network', 'ethernet', desktopState.settings.network.ethernet);
+		}
+	});
+
+	$effect(() => {
+		if (desktopState.settings.network.proxy !== previousProxy) {
+			previousProxy = desktopState.settings.network.proxy;
+			desktopState.updateSetting('network', 'proxy', desktopState.settings.network.proxy);
+		}
+	});
+
 	function updateSetting(category, key, value) {
-		settings[category][key] = value;
-		// Here you would typically save to localStorage or send to a backend
-		console.log(`Updated ${category}.${key} to:`, value);
+		desktopState.updateSetting(category, key, value);
 	}
 
 	function getTabIcon(iconType) {
@@ -88,81 +141,86 @@
 
 				<!-- Theme -->
 				<div class="mb-6">
-					<label class="mb-2 block text-sm font-medium text-gray-700">Theme</label>
-					<div class="flex space-x-4">
-						<label class="flex items-center">
-							<input
-								type="radio"
-								bind:group={settings.appearance.theme}
-								value="light"
-								onchange={() => updateSetting('appearance', 'theme', 'light')}
-								class="mr-2"
-							/>
-							Light
-						</label>
-						<label class="flex items-center">
-							<input
-								type="radio"
-								bind:group={settings.appearance.theme}
-								value="dark"
-								onchange={() => updateSetting('appearance', 'theme', 'dark')}
-								class="mr-2"
-							/>
-							Dark
-						</label>
-						<label class="flex items-center">
-							<input
-								type="radio"
-								bind:group={settings.appearance.theme}
-								value="auto"
-								onchange={() => updateSetting('appearance', 'theme', 'auto')}
-								class="mr-2"
-							/>
-							Auto
-						</label>
-					</div>
+					<fieldset>
+						<legend class="mb-2 block text-sm font-medium text-gray-700">Theme</legend>
+						<div class="flex space-x-4">
+							<label class="flex items-center">
+								<input
+									type="radio"
+									bind:group={desktopState.settings.appearance.theme}
+									value="light"
+									class="mr-2"
+								/>
+								Light
+							</label>
+							<label class="flex items-center">
+								<input
+									type="radio"
+									bind:group={desktopState.settings.appearance.theme}
+									value="dark"
+									class="mr-2"
+								/>
+								Dark
+							</label>
+							<label class="flex items-center">
+								<input
+									type="radio"
+									bind:group={desktopState.settings.appearance.theme}
+									value="auto"
+									class="mr-2"
+								/>
+								Auto
+							</label>
+						</div>
+					</fieldset>
 				</div>
 
 				<!-- Wallpaper -->
 				<div class="mb-6">
-					<label class="mb-3 block text-sm font-medium text-gray-700">Wallpaper</label>
-					<div class="grid grid-cols-2 gap-3">
-						{#each wallpapers as wallpaper}
-							<button
-								class="relative rounded-lg border-2 p-3 transition-colors {settings.appearance
-									.wallpaper === wallpaper.id
-									? 'border-blue-500 bg-blue-50'
-									: 'border-gray-200 hover:border-gray-300'}"
-								onclick={() => updateSetting('appearance', 'wallpaper', wallpaper.id)}
-							>
-								<div class="mb-2 h-16 w-full rounded" style="background: {wallpaper.preview}"></div>
-								<div class="text-center text-sm">{wallpaper.name}</div>
-								{#if settings.appearance.wallpaper === wallpaper.id}
-									<div
-										class="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500"
-									>
-										<svg class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="currentColor">
-											<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-										</svg>
-									</div>
-								{/if}
-							</button>
-						{/each}
-					</div>
+					<fieldset>
+						<legend class="mb-3 block text-sm font-medium text-gray-700">Wallpaper</legend>
+						<div class="grid grid-cols-2 gap-3">
+							{#each wallpapers as wallpaper}
+								<button
+									class="relative rounded-lg border-2 p-3 transition-colors {desktopState.settings.appearance
+										.wallpaper === wallpaper.id
+										? 'border-blue-500 bg-blue-50'
+										: 'border-gray-200 hover:border-gray-300'}"
+									onclick={() => {
+										console.log('Wallpaper clicked:', wallpaper.id);
+										desktopState.setWallpaper(wallpaper.id);
+										console.log('After setWallpaper - currentWallpaper:', desktopState.currentWallpaper);
+									}}
+								>
+									<div class="mb-2 h-16 w-full rounded" style="{wallpaper.preview}"></div>
+									<div class="text-center text-sm">{wallpaper.name}</div>
+									{#if desktopState.settings.appearance.wallpaper === wallpaper.id}
+										<div
+											class="absolute top-1 right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500"
+										>
+											<svg class="h-3 w-3 text-white" viewBox="0 0 24 24" fill="currentColor">
+												<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+											</svg>
+										</div>
+									{/if}
+								</button>
+							{/each}
+						</div>
+					</fieldset>
 				</div>
 
 				<!-- Font Size -->
 				<div class="mb-6">
-					<label class="mb-2 block text-sm font-medium text-gray-700">Font Size</label>
+					<label for="fontSize" class="mb-2 block text-sm font-medium text-gray-700">Font Size</label>
 					<input
+						id="fontSize"
 						type="range"
 						min="12"
 						max="20"
-						bind:value={settings.appearance.fontSize}
-						onchange={() => updateSetting('appearance', 'fontSize', settings.appearance.fontSize)}
+						bind:value={desktopState.settings.appearance.fontSize}
 						class="w-full"
 					/>
-					<div class="mt-1 text-sm text-gray-600">{settings.appearance.fontSize}px</div>
+					<div class="mt-1 text-sm text-gray-600">{desktopState.settings.appearance.fontSize}px</div>
 				</div>
 			</div>
 		{:else if activeTab === 'system'}
@@ -174,8 +232,7 @@
 						<span class="text-sm font-medium">Auto Login</span>
 						<input
 							type="checkbox"
-							bind:checked={settings.system.autologin}
-							onchange={() => updateSetting('system', 'autologin', settings.system.autologin)}
+							bind:checked={desktopState.settings.system.autologin}
 							class="ml-2"
 						/>
 					</label>
@@ -184,9 +241,7 @@
 						<span class="text-sm font-medium">Show Notifications</span>
 						<input
 							type="checkbox"
-							bind:checked={settings.system.showNotifications}
-							onchange={() =>
-								updateSetting('system', 'showNotifications', settings.system.showNotifications)}
+							bind:checked={desktopState.settings.system.showNotifications}
 							class="ml-2"
 						/>
 					</label>
@@ -195,8 +250,7 @@
 						<span class="text-sm font-medium">Sound Enabled</span>
 						<input
 							type="checkbox"
-							bind:checked={settings.system.soundEnabled}
-							onchange={() => updateSetting('system', 'soundEnabled', settings.system.soundEnabled)}
+							bind:checked={desktopState.settings.system.soundEnabled}
 							class="ml-2"
 						/>
 					</label>
@@ -205,9 +259,7 @@
 						<span class="text-sm font-medium">Animations Enabled</span>
 						<input
 							type="checkbox"
-							bind:checked={settings.system.animationsEnabled}
-							onchange={() =>
-								updateSetting('system', 'animationsEnabled', settings.system.animationsEnabled)}
+							bind:checked={desktopState.settings.system.animationsEnabled}
 							class="ml-2"
 						/>
 					</label>
@@ -234,8 +286,7 @@
 							<span class="text-sm font-medium">WiFi</span>
 							<input
 								type="checkbox"
-								bind:checked={settings.network.wifi}
-								onchange={() => updateSetting('network', 'wifi', settings.network.wifi)}
+								bind:checked={desktopState.settings.network.wifi}
 								class="ml-2"
 							/>
 						</label>
@@ -244,8 +295,7 @@
 							<span class="text-sm font-medium">Ethernet</span>
 							<input
 								type="checkbox"
-								bind:checked={settings.network.ethernet}
-								onchange={() => updateSetting('network', 'ethernet', settings.network.ethernet)}
+								bind:checked={desktopState.settings.network.ethernet}
 								class="ml-2"
 							/>
 						</label>
@@ -254,8 +304,7 @@
 							<span class="text-sm font-medium">Use Proxy</span>
 							<input
 								type="checkbox"
-								bind:checked={settings.network.proxy}
-								onchange={() => updateSetting('network', 'proxy', settings.network.proxy)}
+								bind:checked={desktopState.settings.network.proxy}
 								class="ml-2"
 							/>
 						</label>

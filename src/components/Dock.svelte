@@ -100,19 +100,60 @@
 		};
 		return icons[iconType] || '';
 	}
+
+	// Reactive theme classes
+	const dockClasses = $derived(() => {
+		const baseClasses = "fixed top-8 bottom-0 left-0 z-40 flex w-16 flex-col items-center py-4";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-r border-gray-300 bg-gray-200' 
+			: 'border-r border-gray-600 bg-gray-800';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const appButtonClasses = $derived(() => {
+		const baseClasses = "group relative mb-2 flex h-12 w-12 items-center justify-center rounded-lg transition-colors";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'bg-gray-300 hover:bg-gray-400' 
+			: 'bg-gray-700 hover:bg-gray-600';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const iconClasses = $derived(() => {
+		const baseClasses = "h-6 w-6 group-hover:text-white";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'text-gray-700' 
+			: 'text-gray-300';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const tooltipClasses = $derived(() => {
+		const baseClasses = "pointer-events-none absolute left-16 rounded px-2 py-1 text-xs whitespace-nowrap opacity-0 transition-opacity group-hover:opacity-100";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'bg-gray-800 text-white' 
+			: 'bg-gray-900 text-white';
+		return `${baseClasses} ${themeClasses}`;
+	});
+
+	const separatorClasses = $derived(() => {
+		const baseClasses = "mt-auto w-full pt-2";
+		const themeClasses = desktopState.currentTheme === 'light' 
+			? 'border-t border-gray-400' 
+			: 'border-t border-gray-600';
+		return `${baseClasses} ${themeClasses}`;
+	});
 </script>
 
 <div
-	class="fixed top-8 bottom-0 left-0 z-40 flex w-16 flex-col items-center border-r border-gray-600 bg-gray-800 py-4"
+	class={dockClasses()}
 >
 	<!-- App Icons -->
 	{#each apps as app}
 		<button
-			class="group relative mb-2 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-700 transition-colors hover:bg-gray-600"
+			class={appButtonClasses()}
 			onclick={() => launchApp(app)}
 		>
 			<svg
-				class="h-6 w-6 text-gray-300 group-hover:text-white"
+				class={iconClasses()}
 				viewBox="0 0 24 24"
 				fill="currentColor"
 			>
@@ -121,7 +162,7 @@
 
 			<!-- Tooltip -->
 			<div
-				class="pointer-events-none absolute left-16 rounded bg-gray-900 px-2 py-1 text-xs whitespace-nowrap text-white opacity-0 transition-opacity group-hover:opacity-100"
+				class={tooltipClasses()}
 			>
 				{app.name}
 			</div>
@@ -129,7 +170,7 @@
 	{/each}
 
 	<!-- Running Applications Indicator -->
-	<div class="mt-auto w-full border-t border-gray-600 pt-2">
+	<div class={separatorClasses()}>
 		{#each desktopState.windows as window}
 			<button
 				class="mx-auto mb-1 h-2 w-2 cursor-pointer rounded-full bg-blue-400 hover:bg-blue-300 block border-0 p-0"

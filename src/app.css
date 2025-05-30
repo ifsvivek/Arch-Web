@@ -1,1 +1,40 @@
 @import 'tailwindcss';
+
+/* Theme variables */
+:root {
+  color-scheme: light;
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+/* Dark theme for components */
+.dark .bg-white {
+  @apply bg-gray-800;
+}
+
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  @apply text-gray-200;
+}
+
+.dark .text-gray-600 {
+  @apply text-gray-300;
+}
+
+.dark .border-gray-200 {
+  @apply border-gray-600;
+}
+
+.dark .bg-gray-50 {
+  @apply bg-gray-700;
+}
+
+.dark .bg-gray-100 {
+  @apply bg-gray-600;
+}
+
+.dark .hover\:bg-gray-100:hover {
+  @apply bg-gray-600;
+}
