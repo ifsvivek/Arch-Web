@@ -1,6 +1,28 @@
 <script>
 	import { desktopState } from '$lib/stores/desktop.svelte.js';
 
+	// Theme-based styling
+	const isDarkTheme = $derived(desktopState.currentTheme === 'dark' || 
+		(desktopState.currentTheme === 'auto' && 
+		typeof window !== 'undefined' && 
+		window.matchMedia('(prefers-color-scheme: dark)').matches));
+
+	const terminalClasses = $derived(
+		`flex-1 overflow-auto p-4 font-mono text-sm leading-relaxed ${
+			isDarkTheme 
+				? 'text-green-400 bg-black/30' 
+				: 'text-green-600 bg-gray-900/30'
+		}`
+	);
+
+	const inputClasses = $derived(
+		`w-full bg-transparent border-none outline-none font-mono text-sm ${
+			isDarkTheme 
+				? 'text-green-400' 
+				: 'text-green-600'
+		}`
+	);
+
 	let history = $state([
 		'Welcome to Arch Linux Terminal Simulator',
 		'Type "help" for available commands',
@@ -342,53 +364,28 @@
 	}
 
 	// Reactive theme-based classes
-	const headerClasses = $derived(() => {
-		const baseClasses = 'p-4 text-white border-b';
-		const themeClasses =
-			desktopState.currentTheme === 'light'
-				? 'bg-gray-800/90 border-gray-700/50'
-				: 'bg-gray-900/90 border-gray-700/50';
-		return `${baseClasses} ${themeClasses}`;
-	});
+	const containerClasses = $derived(
+		`flex h-full flex-col overflow-hidden ${
+			isDarkTheme ? 'text-green-400' : 'text-green-600'
+		}`
+	);
 </script>
 
-<div class="flex h-full flex-col overflow-hidden">
-	<!-- Header -->
-	<div class={headerClasses()}>
-		<h1 class="text-lg font-semibold">Terminal</h1>
-		<div class="mt-1 text-sm text-gray-300">Arch Linux Terminal Simulator</div>
-	</div>
-
+<div class={containerClasses}>
 	<!-- Terminal Window -->
-	<div
-		class="flex-1 overflow-hidden font-mono text-sm"
-		class:bg-black={desktopState.currentTheme === 'dark'}
-		class:bg-gray-900={desktopState.currentTheme === 'light'}
-	>
-		<div
-			class="h-full space-y-1 overflow-auto p-4"
-			class:text-green-400={desktopState.currentTheme === 'dark'}
-			class:text-green-500={desktopState.currentTheme === 'light'}
-		>
+	<div class="flex-1 overflow-hidden font-mono text-sm">
+		<div class={terminalClasses}>
 			{#each history as line}
-				<div class="whitespace-pre-wrap backdrop-blur-sm">{line}</div>
+				<div>{line}</div>
 			{/each}
-
-			<!-- Input Line -->
+			<!-- Current input line -->
 			<div class="flex items-center">
-				<span
-					class:text-blue-400={desktopState.currentTheme === 'dark'}
-					class:text-blue-500={desktopState.currentTheme === 'light'}>user@archsim:~$</span
-				>
+				<span class="mr-2">user@arch:~$</span>
 				<input
 					bind:this={inputElement}
 					bind:value={currentInput}
 					onkeydown={handleKeydown}
-					class="ml-1 flex-1 bg-transparent outline-none"
-					class:text-green-400={desktopState.currentTheme === 'dark'}
-					class:text-green-500={desktopState.currentTheme === 'light'}
-					class:caret-green-400={desktopState.currentTheme === 'dark'}
-					class:caret-green-500={desktopState.currentTheme === 'light'}
+					class={inputClasses}
 					autofocus
 				/>
 			</div>

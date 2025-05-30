@@ -1,8 +1,51 @@
-<!-- filepath: /home/ifsvivek/Documents/Arch Web/src/components/apps/Settings.svelte -->
 <script>
 	import { desktopState } from '$lib/stores/desktop.svelte.js';
 	
 	let activeTab = $state('appearance');
+
+	// Theme-based styling
+	const isDarkTheme = $derived(desktopState.currentTheme === 'dark' || 
+		(desktopState.currentTheme === 'auto' && 
+		typeof window !== 'undefined' && 
+		window.matchMedia('(prefers-color-scheme: dark)').matches));
+
+	const containerClasses = $derived(
+		`flex h-full ${
+			isDarkTheme 
+				? 'text-white' 
+				: 'text-gray-900'
+		}`
+	);
+
+	const sidebarClasses = $derived(
+		`w-64 border-r ${
+			isDarkTheme 
+				? 'border-gray-600/30' 
+				: 'border-gray-200/30'
+		}`
+	);
+
+	const titleClasses = $derived(
+		`text-lg font-semibold ${
+			isDarkTheme ? 'text-white' : 'text-gray-800'
+		}`
+	);
+
+	const contentClasses = $derived(
+		`flex-1 overflow-y-auto ${
+			isDarkTheme 
+				? 'bg-transparent text-white' 
+				: 'bg-transparent text-gray-900'
+		}`
+	);
+
+	function getTabClasses(isActive) {
+		return `flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors ${
+			isActive
+				? (isDarkTheme ? 'bg-blue-600/20 text-blue-300' : 'bg-blue-100/30 text-blue-700')
+				: (isDarkTheme ? 'text-gray-300 hover:bg-gray-700/20' : 'text-gray-700 hover:bg-gray-100/20')
+		}`;
+	}
 
 	const tabs = [
 		{ id: 'appearance', name: 'Appearance', icon: 'palette' },
@@ -109,19 +152,16 @@
 	}
 </script>
 
-<div class="flex h-full bg-white">
+<div class={containerClasses}>
 	<!-- Sidebar -->
-	<div class="w-64 border-r border-gray-200 bg-gray-50">
+	<div class={sidebarClasses}>
 		<div class="p-4">
-			<h1 class="text-lg font-semibold text-gray-800">Settings</h1>
+			<h1 class={titleClasses}>Settings</h1>
 		</div>
 		<nav class="space-y-1 px-2">
 			{#each tabs as tab}
 				<button
-					class="flex w-full items-center rounded-lg px-3 py-2 text-sm transition-colors {activeTab ===
-					tab.id
-						? 'bg-blue-100 text-blue-700'
-						: 'text-gray-700 hover:bg-gray-100'}"
+					class={getTabClasses(activeTab === tab.id)}
 					onclick={() => (activeTab = tab.id)}
 				>
 					<svg class="mr-3 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -134,7 +174,7 @@
 	</div>
 
 	<!-- Main Content -->
-	<div class="flex-1 overflow-y-auto">
+	<div class={contentClasses}>
 		{#if activeTab === 'appearance'}
 			<div class="p-6">
 				<h2 class="mb-6 text-xl font-semibold">Appearance</h2>
@@ -142,7 +182,7 @@
 				<!-- Theme -->
 				<div class="mb-6">
 					<fieldset>
-						<legend class="mb-2 block text-sm font-medium text-gray-700">Theme</legend>
+						<legend class={`mb-2 block text-sm font-medium ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>Theme</legend>
 						<div class="flex space-x-4">
 							<label class="flex items-center">
 								<input
@@ -178,14 +218,14 @@
 				<!-- Wallpaper -->
 				<div class="mb-6">
 					<fieldset>
-						<legend class="mb-3 block text-sm font-medium text-gray-700">Wallpaper</legend>
+						<legend class={`mb-3 block text-sm font-medium ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>Wallpaper</legend>
 						<div class="grid grid-cols-2 gap-3">
 							{#each wallpapers as wallpaper}
 								<button
 									class="relative rounded-lg border-2 p-3 transition-colors {desktopState.settings.appearance
 										.wallpaper === wallpaper.id
-										? 'border-blue-500 bg-blue-50'
-										: 'border-gray-200 hover:border-gray-300'}"
+										? (isDarkTheme ? 'border-blue-400 bg-blue-500/10' : 'border-blue-500 bg-blue-50/30')
+										: (isDarkTheme ? 'border-gray-600 hover:border-gray-500 bg-gray-800/10' : 'border-gray-300 hover:border-gray-400 bg-white/10')}"
 									onclick={() => {
 										console.log('Wallpaper clicked:', wallpaper.id);
 										desktopState.setWallpaper(wallpaper.id);
@@ -211,7 +251,7 @@
 
 				<!-- Font Size -->
 				<div class="mb-6">
-					<label for="fontSize" class="mb-2 block text-sm font-medium text-gray-700">Font Size</label>
+					<label for="fontSize" class={`mb-2 block text-sm font-medium ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>Font Size</label>
 					<input
 						id="fontSize"
 						type="range"
@@ -220,7 +260,7 @@
 						bind:value={desktopState.settings.appearance.fontSize}
 						class="w-full"
 					/>
-					<div class="mt-1 text-sm text-gray-600">{desktopState.settings.appearance.fontSize}px</div>
+					<div class={`mt-1 text-sm ${isDarkTheme ? 'text-gray-400' : 'text-gray-600'}`}>{desktopState.settings.appearance.fontSize}px</div>
 				</div>
 			</div>
 		{:else if activeTab === 'system'}
@@ -228,7 +268,7 @@
 				<h2 class="mb-6 text-xl font-semibold">System</h2>
 
 				<div class="space-y-4">
-					<label class="flex items-center justify-between">
+					<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 						<span class="text-sm font-medium">Auto Login</span>
 						<input
 							type="checkbox"
@@ -237,7 +277,7 @@
 						/>
 					</label>
 
-					<label class="flex items-center justify-between">
+					<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 						<span class="text-sm font-medium">Show Notifications</span>
 						<input
 							type="checkbox"
@@ -246,7 +286,7 @@
 						/>
 					</label>
 
-					<label class="flex items-center justify-between">
+					<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 						<span class="text-sm font-medium">Sound Enabled</span>
 						<input
 							type="checkbox"
@@ -255,7 +295,7 @@
 						/>
 					</label>
 
-					<label class="flex items-center justify-between">
+					<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 						<span class="text-sm font-medium">Animations Enabled</span>
 						<input
 							type="checkbox"
@@ -271,18 +311,18 @@
 
 				<div class="space-y-6">
 					<div>
-						<h3 class="mb-3 text-lg font-medium">Connection Status</h3>
-						<div class="rounded-lg border border-green-200 bg-green-50 p-4">
+						<h3 class={`mb-3 text-lg font-medium ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Connection Status</h3>
+						<div class={`rounded-lg border p-4 ${isDarkTheme ? 'border-green-500/50 bg-green-900/20' : 'border-green-200 bg-green-50/70'}`}>
 							<div class="flex items-center">
 								<div class="mr-3 h-3 w-3 rounded-full bg-green-500"></div>
-								<span class="text-green-800">Connected to ArchLinux-WiFi</span>
+								<span class={isDarkTheme ? 'text-green-300' : 'text-green-800'}>Connected to ArchLinux-WiFi</span>
 							</div>
-							<div class="mt-1 text-sm text-green-600">IP: 192.168.1.100</div>
+							<div class={`mt-1 text-sm ${isDarkTheme ? 'text-green-400' : 'text-green-600'}`}>IP: 192.168.1.100</div>
 						</div>
 					</div>
 
 					<div class="space-y-4">
-						<label class="flex items-center justify-between">
+						<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 							<span class="text-sm font-medium">WiFi</span>
 							<input
 								type="checkbox"
@@ -291,7 +331,7 @@
 							/>
 						</label>
 
-						<label class="flex items-center justify-between">
+						<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 							<span class="text-sm font-medium">Ethernet</span>
 							<input
 								type="checkbox"
@@ -300,7 +340,7 @@
 							/>
 						</label>
 
-						<label class="flex items-center justify-between">
+						<label class={`flex items-center justify-between p-3 rounded-lg border transition-colors ${isDarkTheme ? 'border-gray-600/30 bg-gray-800/10 hover:bg-gray-700/20' : 'border-gray-200/50 bg-white/20 hover:bg-white/30'}`}>
 							<span class="text-sm font-medium">Use Proxy</span>
 							<input
 								type="checkbox"
@@ -316,7 +356,7 @@
 				<h2 class="mb-6 text-xl font-semibold">About</h2>
 
 				<div class="max-w-2xl">
-					<div class="mb-6 rounded-lg bg-gray-50 p-6">
+					<div class={`mb-6 rounded-lg p-6 ${isDarkTheme ? 'bg-gray-800/30 border border-gray-600/30' : 'bg-gray-50/30 border border-gray-200/30'}`}>
 						<div class="mb-4 flex items-center">
 							<div class="mr-4 flex h-16 w-16 items-center justify-center rounded-lg bg-blue-500">
 								<svg class="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -324,12 +364,12 @@
 								</svg>
 							</div>
 							<div>
-								<h3 class="text-lg font-semibold">Arch Linux Desktop Simulator</h3>
-								<p class="text-gray-600">Version 1.0.0</p>
+								<h3 class={`text-lg font-semibold ${isDarkTheme ? 'text-white' : 'text-gray-900'}`}>Arch Linux Desktop Simulator</h3>
+								<p class={isDarkTheme ? 'text-gray-400' : 'text-gray-600'}>Version 1.0.0</p>
 							</div>
 						</div>
 
-						<div class="space-y-2 text-sm">
+						<div class={`space-y-2 text-sm ${isDarkTheme ? 'text-gray-300' : 'text-gray-700'}`}>
 							<div><strong>Built with:</strong> Svelte 5, Tailwind CSS 4</div>
 							<div><strong>OS:</strong> Arch Linux x86_64</div>
 							<div><strong>Kernel:</strong> 6.1.0-arch1-1</div>
@@ -337,7 +377,7 @@
 						</div>
 					</div>
 
-					<div class="prose text-sm text-gray-600">
+					<div class={`prose text-sm ${isDarkTheme ? 'text-gray-300' : 'text-gray-600'}`}>
 						<p>
 							This is a web-based desktop simulator that replicates the look and feel of a GNOME
 							desktop environment with an Arch Linux theme. It demonstrates modern web technologies

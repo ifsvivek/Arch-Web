@@ -1,7 +1,9 @@
 <script>
-	let { 
-		title = 'Window', 
-		onClose = () => {}, 
+	import { desktopState } from '$lib/stores/desktop.svelte.js';
+	
+	let {
+		title = 'Window',
+		onClose = () => {},
 		children,
 		initialWidth = 400,
 		initialHeight = 300,
@@ -18,7 +20,7 @@
 	let resizeType = $state('');
 	let dragStart = $state({ x: 0, y: 0, windowX: 0, windowY: 0 });
 	let resizeStart = $state({ x: 0, y: 0, width: 0, height: 0, windowX: 0, windowY: 0 });
-	
+
 	let windowState = $state({
 		x,
 		y,
@@ -27,9 +29,45 @@
 		zIndex
 	});
 
+	// Theme-based styling
+	const isDarkTheme = $derived(desktopState.currentTheme === 'dark' || 
+		(desktopState.currentTheme === 'auto' && 
+		typeof window !== 'undefined' && 
+		window.matchMedia('(prefers-color-scheme: dark)').matches));
+
+	const windowClasses = $derived(
+		`absolute overflow-hidden rounded-lg border shadow-2xl select-none backdrop-blur-xl ${
+			isDarkTheme 
+				? 'border-gray-600 bg-gray-900/30' 
+				: 'border-gray-300 bg-white/30'
+		}`
+	);
+
+	const titleBarClasses = $derived(
+		`flex cursor-grab items-center justify-between border-b px-4 py-2 active:cursor-grabbing ${
+			isDarkTheme 
+				? 'border-gray-600 bg-gray-700' 
+				: 'border-gray-200 bg-gray-100'
+		}`
+	);
+
+	const titleClasses = $derived(
+		`truncate text-sm font-medium ${
+			isDarkTheme ? 'text-white' : 'text-gray-900'
+		}`
+	);
+
+	const contentClasses = $derived(
+		`flex-1 overflow-auto ${
+			isDarkTheme 
+				? 'bg-gray-900/50 text-white' 
+				: 'bg-white/50 text-gray-900'
+		}`
+	);
+
 	function handleMouseDown(e) {
 		if (e.target.closest('.resize-handle') || e.target.closest('.window-controls')) return;
-		
+
 		isDragging = true;
 		dragStart = {
 			x: e.clientX,
@@ -132,20 +170,25 @@
 	});
 </script>
 
-<div 
+<div
 	bind:this={windowRef}
-	class="absolute bg-gray-800 border border-gray-600 rounded-lg shadow-2xl overflow-hidden select-none"
+	onmousedown={() => {
+		const elements = document.querySelectorAll('.absolute');
+		const zIndexes = Array.from(elements).map((el) => parseInt(el.style.zIndex || 0));
+		windowState.zIndex = Math.max(...zIndexes) + 1;
+	}}
+	class={windowClasses}
 	style="left: {windowState.x}px; top: {windowState.y}px; width: {windowState.width}px; height: {windowState.height}px; z-index: {windowState.zIndex};"
 >
 	<!-- Window Title Bar -->
-	<div 
-		class="bg-gray-700 px-4 py-2 flex items-center justify-between cursor-grab active:cursor-grabbing border-b border-gray-600"
+	<div
+		class={titleBarClasses}
 		onmousedown={handleMouseDown}
 	>
-		<h3 class="text-white font-medium text-sm truncate">{title}</h3>
+		<h3 class={titleClasses}>{title}</h3>
 		<div class="window-controls flex items-center space-x-2">
-			<button 
-				class="w-3 h-3 bg-red-500 rounded-full hover:bg-red-400 transition-colors"
+			<button
+				class="h-3 w-3 rounded-full bg-red-500 transition-colors hover:bg-red-400"
 				onclick={onClose}
 				aria-label="Close window"
 				title="Close"
@@ -154,25 +197,41 @@
 	</div>
 
 	<!-- Window Content -->
-	<div class="flex-1 overflow-auto" style="height: {windowState.height - 40}px;">
+	<div class={contentClasses} style="height: {windowState.height - 40}px;">
 		{@render children()}
 	</div>
 
 	<!-- Resize Handles -->
-	<div class="resize-handle absolute top-0 left-0 w-2 h-2 cursor-nw-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'nw')}></div>
-	<div class="resize-handle absolute top-0 right-0 w-2 h-2 cursor-ne-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'ne')}></div>
-	<div class="resize-handle absolute bottom-0 left-0 w-2 h-2 cursor-sw-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'sw')}></div>
-	<div class="resize-handle absolute bottom-0 right-0 w-2 h-2 cursor-se-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'se')}></div>
-	<div class="resize-handle absolute top-0 left-2 right-2 h-1 cursor-n-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'n')}></div>
-	<div class="resize-handle absolute bottom-0 left-2 right-2 h-1 cursor-s-resize" 
-		onmousedown={(e) => handleResizeStart(e, 's')}></div>
-	<div class="resize-handle absolute left-0 top-2 bottom-2 w-1 cursor-w-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'w')}></div>
-	<div class="resize-handle absolute right-0 top-2 bottom-2 w-1 cursor-e-resize" 
-		onmousedown={(e) => handleResizeStart(e, 'e')}></div>
+	<div
+		class="resize-handle absolute top-0 left-0 h-2 w-2 cursor-nw-resize"
+		onmousedown={(e) => handleResizeStart(e, 'nw')}
+	></div>
+	<div
+		class="resize-handle absolute top-0 right-0 h-2 w-2 cursor-ne-resize"
+		onmousedown={(e) => handleResizeStart(e, 'ne')}
+	></div>
+	<div
+		class="resize-handle absolute bottom-0 left-0 h-2 w-2 cursor-sw-resize"
+		onmousedown={(e) => handleResizeStart(e, 'sw')}
+	></div>
+	<div
+		class="resize-handle absolute right-0 bottom-0 h-2 w-2 cursor-se-resize"
+		onmousedown={(e) => handleResizeStart(e, 'se')}
+	></div>
+	<div
+		class="resize-handle absolute top-0 right-2 left-2 h-1 cursor-n-resize"
+		onmousedown={(e) => handleResizeStart(e, 'n')}
+	></div>
+	<div
+		class="resize-handle absolute right-2 bottom-0 left-2 h-1 cursor-s-resize"
+		onmousedown={(e) => handleResizeStart(e, 's')}
+	></div>
+	<div
+		class="resize-handle absolute top-2 bottom-2 left-0 w-1 cursor-w-resize"
+		onmousedown={(e) => handleResizeStart(e, 'w')}
+	></div>
+	<div
+		class="resize-handle absolute top-2 right-0 bottom-2 w-1 cursor-e-resize"
+		onmousedown={(e) => handleResizeStart(e, 'e')}
+	></div>
 </div>
