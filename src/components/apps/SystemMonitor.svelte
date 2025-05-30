@@ -10,11 +10,11 @@
 
 	// Simulate system data
 	function generateSystemData() {
-		cpuUsage = Math.random() * 100;
-		memoryUsage = 45 + Math.random() * 30;
-		diskUsage = 65 + Math.random() * 15;
-		networkUp = Math.random() * 1024;
-		networkDown = Math.random() * 2048;
+		cpuUsage = Math.max(0, Math.min(100, cpuUsage + (Math.random() * 10 - 5)));
+		memoryUsage = Math.max(40, Math.min(80, memoryUsage + (Math.random() * 6 - 3)));
+		diskUsage = Math.max(60, Math.min(85, diskUsage + (Math.random() * 2 - 1)));
+		networkUp = Math.max(0, networkUp + (Math.random() * 200 - 100));
+		networkDown = Math.max(0, networkDown + (Math.random() * 400 - 200));
 		uptime += 1;
 
 		// Generate process list
@@ -31,13 +31,16 @@
 			'code'
 		];
 		processes = processNames
-			.map((name, i) => ({
-				pid: 1000 + i,
-				name,
-				cpu: Math.random() * 15,
-				memory: Math.random() * 512,
-				status: Math.random() > 0.1 ? 'Running' : 'Sleeping'
-			}))
+			.map((name, i) => {
+				const prevProcess = processes.find(p => p.name === name) || {};
+				return {
+					pid: 1000 + i,
+					name,
+					cpu: Math.max(0, Math.min(15, (prevProcess.cpu || Math.random() * 15) + (Math.random() * 4 - 2))),
+					memory: Math.max(0, Math.min(512, (prevProcess.memory || Math.random() * 512) + (Math.random() * 50 - 25))),
+					status: Math.random() > 0.05 ? (prevProcess.status || 'Running') : 'Sleeping'
+				};
+			})
 			.sort((a, b) => b.cpu - a.cpu);
 	}
 
@@ -156,10 +159,13 @@
 				<div class="mb-2 text-sm font-medium">System Info</div>
 				<div class="space-y-1 text-xs text-gray-600">
 					<div>OS: Arch Linux x86_64</div>
-					<div>Kernel: 6.1.0-arch1-1</div>
-					<div>Shell: bash 5.1.16</div>
-					<div>DE: GNOME 43.0</div>
-					<div>CPU: Intel i7-12700K</div>
+					<div>Host: OMEN Laptop 15-en1xxx</div>
+					<div>Kernel: Linux 6.14.7-arch2-1</div>
+					<div>Shell: fish 4.0.2</div>
+					<div>WM: Hyprland 0.49.0</div>
+					<div>CPU: AMD Ryzen 7 5800H (16) @ 4.46 GHz</div>
+					<div>GPU: NVIDIA RTX 3060 Mobile</div>
+					<div>Memory: 22.82 GiB</div>
 				</div>
 			</div>
 		</div>
