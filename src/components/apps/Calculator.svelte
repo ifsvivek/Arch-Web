@@ -2,14 +2,14 @@
 	let display = $state('0');
 	let previousValue = $state(null);
 	let operation = $state(null);
-	let waitingForNewValue = $state(false);
+	let waitingForOperand = $state(false);
 
 	function inputNumber(num) {
-		if (waitingForNewValue) {
-			display = String(num);
-			waitingForNewValue = false;
+		if (waitingForOperand) {
+			display = num;
+			waitingForOperand = false;
 		} else {
-			display = display === '0' ? String(num) : display + num;
+			display = display === '0' ? num : display + num;
 		}
 	}
 
@@ -26,7 +26,7 @@
 			previousValue = newValue;
 		}
 
-		waitingForNewValue = true;
+		waitingForOperand = true;
 		operation = nextOperation;
 	}
 
@@ -40,111 +40,115 @@
 				return firstValue * secondValue;
 			case '/':
 				return firstValue / secondValue;
-			case '=':
-				return secondValue;
 			default:
 				return secondValue;
 		}
 	}
 
 	function performCalculation() {
-		if (operation && previousValue !== null) {
-			const inputValue = parseFloat(display);
-			const newValue = calculate(previousValue, inputValue, operation);
+		const inputValue = parseFloat(display);
 
+		if (previousValue !== null && operation) {
+			const newValue = calculate(previousValue, inputValue, operation);
 			display = String(newValue);
 			previousValue = null;
 			operation = null;
-			waitingForNewValue = true;
+			waitingForOperand = true;
 		}
 	}
 
-	function clearDisplay() {
+	function clearAll() {
 		display = '0';
 		previousValue = null;
 		operation = null;
-		waitingForNewValue = false;
+		waitingForOperand = false;
+	}
+
+	function clearEntry() {
+		display = '0';
 	}
 
 	function inputDecimal() {
-		if (waitingForNewValue) {
+		if (waitingForOperand) {
 			display = '0.';
-			waitingForNewValue = false;
+			waitingForOperand = false;
 		} else if (display.indexOf('.') === -1) {
-			display = display + '.';
+			display += '.';
 		}
 	}
-
-	const buttons = [
-		{
-			text: 'C',
-			action: clearDisplay,
-			className: 'bg-red-500 hover:bg-red-600 text-white col-span-2'
-		},
-		{
-			text: '/',
-			action: () => inputOperation('/'),
-			className: 'bg-gray-500 hover:bg-gray-600 text-white'
-		},
-		{
-			text: '*',
-			action: () => inputOperation('*'),
-			className: 'bg-gray-500 hover:bg-gray-600 text-white'
-		},
-
-		{ text: '7', action: () => inputNumber(7), className: 'bg-gray-200 hover:bg-gray-300' },
-		{ text: '8', action: () => inputNumber(8), className: 'bg-gray-200 hover:bg-gray-300' },
-		{ text: '9', action: () => inputNumber(9), className: 'bg-gray-200 hover:bg-gray-300' },
-		{
-			text: '-',
-			action: () => inputOperation('-'),
-			className: 'bg-gray-500 hover:bg-gray-600 text-white'
-		},
-
-		{ text: '4', action: () => inputNumber(4), className: 'bg-gray-200 hover:bg-gray-300' },
-		{ text: '5', action: () => inputNumber(5), className: 'bg-gray-200 hover:bg-gray-300' },
-		{ text: '6', action: () => inputNumber(6), className: 'bg-gray-200 hover:bg-gray-300' },
-		{
-			text: '+',
-			action: () => inputOperation('+'),
-			className: 'bg-gray-500 hover:bg-gray-600 text-white'
-		},
-
-		{ text: '1', action: () => inputNumber(1), className: 'bg-gray-200 hover:bg-gray-300' },
-		{ text: '2', action: () => inputNumber(2), className: 'bg-gray-200 hover:bg-gray-300' },
-		{ text: '3', action: () => inputNumber(3), className: 'bg-gray-200 hover:bg-gray-300' },
-		{
-			text: '=',
-			action: performCalculation,
-			className: 'bg-blue-500 hover:bg-blue-600 text-white row-span-2'
-		},
-
-		{
-			text: '0',
-			action: () => inputNumber(0),
-			className: 'bg-gray-200 hover:bg-gray-300 col-span-2'
-		},
-		{ text: '.', action: inputDecimal, className: 'bg-gray-200 hover:bg-gray-300' }
-	];
 </script>
 
-<div class="flex h-full flex-col p-4">
+<div class="bg-gray-800 text-white p-4 h-full flex flex-col">
 	<!-- Display -->
-	<div
-		class="mb-4 overflow-hidden rounded bg-gray-900 p-4 text-right font-mono text-2xl text-white"
-	>
-		{display}
+	<div class="bg-gray-900 border border-gray-600 rounded p-3 mb-4 text-right">
+		<div class="text-2xl font-mono overflow-hidden">{display}</div>
 	</div>
 
 	<!-- Button Grid -->
-	<div class="grid flex-1 grid-cols-4 gap-2">
-		{#each buttons as button}
-			<button
-				class="rounded font-semibold transition-colors {button.className}"
-				onclick={button.action}
-			>
-				{button.text}
-			</button>
-		{/each}
+	<div class="grid grid-cols-4 gap-2 flex-1">
+		<!-- Row 1 -->
+		<button class="bg-gray-600 hover:bg-gray-500 rounded p-3 transition-colors" onclick={clearAll}>
+			AC
+		</button>
+		<button class="bg-gray-600 hover:bg-gray-500 rounded p-3 transition-colors" onclick={clearEntry}>
+			CE
+		</button>
+		<button class="bg-gray-600 hover:bg-gray-500 rounded p-3 transition-colors" onclick={() => inputOperation('/')}>
+			÷
+		</button>
+		<button class="bg-orange-600 hover:bg-orange-500 rounded p-3 transition-colors" onclick={() => inputOperation('*')}>
+			×
+		</button>
+
+		<!-- Row 2 -->
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('7')}>
+			7
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('8')}>
+			8
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('9')}>
+			9
+		</button>
+		<button class="bg-orange-600 hover:bg-orange-500 rounded p-3 transition-colors" onclick={() => inputOperation('-')}>
+			−
+		</button>
+
+		<!-- Row 3 -->
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('4')}>
+			4
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('5')}>
+			5
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('6')}>
+			6
+		</button>
+		<button class="bg-orange-600 hover:bg-orange-500 rounded p-3 transition-colors" onclick={() => inputOperation('+')}>
+			+
+		</button>
+
+		<!-- Row 4 -->
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors col-span-2" onclick={() => inputNumber('0')}>
+			0
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={inputDecimal}>
+			.
+		</button>
+		<button class="bg-orange-600 hover:bg-orange-500 rounded p-3 transition-colors" onclick={performCalculation}>
+			=
+		</button>
+
+		<!-- Row 5 -->
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('1')}>
+			1
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('2')}>
+			2
+		</button>
+		<button class="bg-gray-700 hover:bg-gray-600 rounded p-3 transition-colors" onclick={() => inputNumber('3')}>
+			3
+		</button>
+		<div></div> <!-- Empty space -->
 	</div>
 </div>
