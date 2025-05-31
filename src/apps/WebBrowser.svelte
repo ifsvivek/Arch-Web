@@ -9,15 +9,15 @@
 	let searchSuggestions = $state([]);
 	let showSuggestions = $state(false);
 	let history = $state([
-		{ url: 'https://duckduckgo.com', title: 'DuckDuckGo', timestamp: Date.now() - 3600000 },
-		{ url: 'https://github.com', title: 'GitHub', timestamp: Date.now() - 7200000 },
-		{ url: 'https://archlinux.org', title: 'Arch Linux', timestamp: Date.now() - 10800000 }
+		{ url: 'https://example.com', title: 'Example', timestamp: Date.now() },
+		{ url: 'https://ifsvivek.in', title: 'ifsvivek.in', timestamp: Date.now() }
 	]);
 	let bookmarks = $state([
-		{ title: 'DuckDuckGo', url: 'https://duckduckgo.com', favicon: '🔍' },
-		{ title: 'GitHub', url: 'https://github.com', favicon: '🐙' },
-		{ title: 'Arch Linux', url: 'https://archlinux.org', favicon: '🐧' },
-		{ title: 'MDN Web Docs', url: 'https://developer.mozilla.org', favicon: '📚' }
+		{ title: 'ifsvivek.in', url: 'https://ifsvivek.in', favicon: '🔖' },
+		{ title: 'ImageCDN', url: 'https://imagecdn.ifsvivek.in', favicon: '🔖' },
+		{ title: 'Sugar Tracker', url: 'https://sugar.ifsvivek.in', favicon: '🔖' },
+		{ title: 'Wikipedia', url: 'https://wikipedia.org', favicon: '🔖' },
+		{ title: 'Archive.org', url: 'https://archive.org', favicon: '🔖' }
 	]);
 	let showBookmarks = $state(false);
 	let showHistory = $state(false);
@@ -212,7 +212,7 @@
 					<span class="flex-1 truncate text-sm font-medium">{tab.title}</span>
 					{#if tabs.length > 1}
 						<div
-							class="ml-2 rounded-full p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20 cursor-pointer"
+							class="ml-2 cursor-pointer rounded-full p-1 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-red-500/20"
 							onclick={(e) => {
 								e.stopPropagation();
 								closeTab(tab.id);
@@ -362,10 +362,10 @@
 			<button
 				onclick={toggleBookmarks}
 				class="rounded-lg p-2 transition-all duration-200 hover:scale-110 {isDarkTheme
-						? 'hover:bg-neutral-700'
-						: 'hover:bg-neutral-200'}"
-					title="Bookmarks"
-					aria-label="Toggle bookmarks"
+					? 'hover:bg-neutral-700'
+					: 'hover:bg-neutral-200'}"
+				title="Bookmarks"
+				aria-label="Toggle bookmarks"
 			>
 				<svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
 					<path d="M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z" />
