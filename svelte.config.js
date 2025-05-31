@@ -9,7 +9,7 @@ const config = {
 		adapter: adapter(),
 		alias: {
 			$components: 'src/components',
-			$apps: 'src/components/apps'
+			$apps: 'src/apps'
 		}
 	}
 };

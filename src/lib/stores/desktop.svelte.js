@@ -48,6 +48,23 @@ export class DesktopState {
 
 	openWindow(type, title, component) {
 		const windowId = this.nextWindowId++;
+		
+		// Set different sizes for different app types
+		let size = { width: 600, height: 400 }; // default
+		if (type === 'system-monitor') {
+			size = { width: 800, height: 650 };
+		} else if (type === 'file-explorer') {
+			size = { width: 800, height: 600 };
+		} else if (type === 'text-editor') {
+			size = { width: 800, height: 500 };
+		} else if (type === 'settings') {
+			size = { width: 650, height: 550 };
+		} else if (type === 'calculator') {
+			size = { width: 350, height: 600 };
+		} else if (type === 'web-browser') {
+			size = { width: 1000, height: 700 };
+		}
+
 		const newWindow = {
 			id: windowId,
 			type,
@@ -55,7 +72,7 @@ export class DesktopState {
 			component,
 			isOpen: true,
 			position: { x: 100 + windowId * 30, y: 100 + windowId * 30 },
-			size: { width: 600, height: 400 },
+			size,
 			isMinimized: false
 		};
 

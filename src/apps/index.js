@@ -10,3 +10,4 @@ export { default as SystemMonitor } from './SystemMonitor.svelte';
 export { default as Settings } from './Settings.svelte';
 export { default as WebBrowser } from './WebBrowser.svelte';
 export { default as MusicPlayer } from './MusicPlayer.svelte';
+

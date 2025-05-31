@@ -52,31 +52,31 @@
 	const topBarClasses = $derived(() => {
 		const baseClasses = "fixed top-0 right-0 left-0 z-50 flex h-10 items-center justify-between px-6 select-none backdrop-blur-2xl border-b shadow-lg";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'bg-white/20 text-gray-900 border-gray-200/50' 
-			: 'bg-black/30 text-white border-gray-700/50';
+			? 'bg-white/20 text-neutral-900 border-neutral-200/50' 
+			: 'bg-black/30 text-white border-neutral-700/50';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const buttonClasses = $derived(() => {
 		const baseClasses = "rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'hover:bg-gray-200/70 hover:shadow-md' 
-			: 'hover:bg-gray-700/70 hover:shadow-md';
+			? 'hover:bg-neutral-200/70 hover:shadow-md' 
+			: 'hover:bg-neutral-700/70 hover:shadow-md';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const clockButtonClasses = $derived(() => {
 		const baseClasses = "flex flex-col items-center rounded-lg px-3 py-1 text-xs leading-tight transition-all duration-200 hover:scale-105 active:scale-95";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'hover:bg-gray-200/70 hover:shadow-md' 
-			: 'hover:bg-gray-700/70 hover:shadow-md';
+			? 'hover:bg-neutral-200/70 hover:shadow-md' 
+			: 'hover:bg-neutral-700/70 hover:shadow-md';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const timeTextClasses = $derived(() => {
 		const baseClasses = "font-semibold text-base";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-900' 
+			? 'text-neutral-900' 
 			: 'text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
@@ -84,24 +84,24 @@
 	const dateTextClasses = $derived(() => {
 		const baseClasses = "text-xs font-medium";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-600' 
-			: 'text-gray-300';
+			? 'text-neutral-600' 
+			: 'text-neutral-300';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const iconClasses = $derived(() => {
 		const baseClasses = "h-5 w-5 cursor-pointer transition-all duration-200 hover:scale-110";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-600 hover:text-gray-900' 
-			: 'text-gray-300 hover:text-white';
+			? 'text-neutral-600 hover:text-neutral-900' 
+			: 'text-neutral-300 hover:text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const notificationIconClasses = $derived(() => {
 		const baseClasses = "relative h-5 w-5 cursor-pointer transition-all duration-200 hover:scale-110";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-600 hover:text-gray-900' 
-			: 'text-gray-300 hover:text-white';
+			? 'text-neutral-600 hover:text-neutral-900' 
+			: 'text-neutral-300 hover:text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
@@ -109,54 +109,54 @@
 		const baseClasses = "flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200 hover:scale-110 active:scale-95 ring-2 ring-offset-2";
 		const themeClasses = desktopState.currentTheme === 'light' 
 			? 'bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 ring-blue-500/20 ring-offset-white' 
-			: 'bg-gradient-to-br from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 ring-blue-400/20 ring-offset-gray-900';
+			: 'bg-gradient-to-br from-blue-400 to-blue-500 hover:from-blue-500 hover:to-blue-600 ring-blue-400/20 ring-offset-neutral-900';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const dropdownClasses = $derived(() => {
 		const baseClasses = "absolute top-12 right-0 z-50 w-80 rounded-xl border backdrop-blur-xl shadow-2xl transform transition-all duration-200 origin-top-right";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'border-gray-200/50 bg-white/90' 
-			: 'border-gray-700/50 bg-gray-800/90';
+			? 'border-neutral-200/50 bg-white/90' 
+			: 'border-neutral-700/50 bg-neutral-800/90';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const dropdownHeaderClasses = $derived(() => {
 		const baseClasses = "px-4 py-3 text-sm font-semibold border-b";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-900 border-gray-200/50' 
-			: 'text-white border-gray-700/50';
+			? 'text-neutral-900 border-neutral-200/50' 
+			: 'text-white border-neutral-700/50';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const dropdownButtonClasses = $derived(() => {
 		const baseClasses = "text-xs transition-all duration-200 hover:scale-105";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-600 hover:text-gray-900' 
-			: 'text-gray-400 hover:text-white';
+			? 'text-neutral-600 hover:text-neutral-900' 
+			: 'text-neutral-400 hover:text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const emptyStateClasses = $derived(() => {
 		const baseClasses = "py-8 text-center text-sm font-medium";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-500' 
-			: 'text-gray-400';
+			? 'text-neutral-500' 
+			: 'text-neutral-400';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const notificationItemClasses = $derived(() => {
 		const baseClasses = "flex items-start justify-between rounded-lg p-3 m-2 transition-all duration-200 hover:scale-[1.02]";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'bg-gray-100/70 hover:bg-gray-200/70' 
-			: 'bg-gray-700/70 hover:bg-gray-600/70';
+			? 'bg-neutral-100/70 hover:bg-neutral-200/70' 
+			: 'bg-neutral-700/70 hover:bg-neutral-600/70';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const notificationTitleClasses = $derived(() => {
 		const baseClasses = "text-sm font-semibold";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-900' 
+			? 'text-neutral-900' 
 			: 'text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
@@ -164,31 +164,31 @@
 	const notificationTextClasses = $derived(() => {
 		const baseClasses = "text-xs";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-600' 
-			: 'text-gray-300';
+			? 'text-neutral-600' 
+			: 'text-neutral-300';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const notificationTimeClasses = $derived(() => {
 		const baseClasses = "mt-1 text-xs font-medium";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-500' 
-			: 'text-gray-400';
+			? 'text-neutral-500' 
+			: 'text-neutral-400';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const systemMenuClasses = $derived(() => {
 		const baseClasses = "absolute top-12 right-0 z-50 w-72 rounded-xl border backdrop-blur-xl shadow-2xl transform transition-all duration-200 origin-top-right";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'border-gray-200/50 bg-white/90' 
-			: 'border-gray-700/50 bg-gray-800/90';
+			? 'border-neutral-200/50 bg-white/90' 
+			: 'border-neutral-700/50 bg-neutral-800/90';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const systemMenuTextClasses = $derived(() => {
 		const baseClasses = "text-sm font-medium";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-900' 
+			? 'text-neutral-900' 
 			: 'text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
@@ -196,39 +196,39 @@
 	const systemMenuSubtextClasses = $derived(() => {
 		const baseClasses = "text-xs";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-500' 
-			: 'text-gray-400';
+			? 'text-neutral-500' 
+			: 'text-neutral-400';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const sliderClasses = $derived(() => {
 		const baseClasses = "h-2 w-full appearance-none rounded-full cursor-pointer transition-all duration-200";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'bg-gray-300 accent-blue-600' 
-			: 'bg-gray-600 accent-blue-400';
+			? 'bg-neutral-300 accent-blue-600' 
+			: 'bg-neutral-600 accent-blue-400';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const userMenuClasses = $derived(() => {
 		const baseClasses = "absolute top-12 right-0 z-50 w-52 rounded-xl border backdrop-blur-xl shadow-2xl transform transition-all duration-200 origin-top-right";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'border-gray-200/50 bg-white/90' 
-			: 'border-gray-700/50 bg-gray-800/90';
+			? 'border-neutral-200/50 bg-white/90' 
+			: 'border-neutral-700/50 bg-neutral-800/90';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const userMenuHeaderClasses = $derived(() => {
 		const baseClasses = "px-4 py-3 border-b";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'border-gray-200/50' 
-			: 'border-gray-700/50';
+			? 'border-neutral-200/50' 
+			: 'border-neutral-700/50';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const userMenuUsernameClasses = $derived(() => {
 		const baseClasses = "text-sm font-semibold";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-900' 
+			? 'text-neutral-900' 
 			: 'text-white';
 		return `${baseClasses} ${themeClasses}`;
 	});
@@ -236,16 +236,16 @@
 	const userMenuOSClasses = $derived(() => {
 		const baseClasses = "text-xs font-medium";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-500' 
-			: 'text-gray-400';
+			? 'text-neutral-500' 
+			: 'text-neutral-400';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
 	const userMenuItemClasses = $derived(() => {
 		const baseClasses = "w-full rounded-lg mx-2 my-1 px-3 py-2 text-left text-sm font-medium transition-all duration-200 hover:scale-[1.02]";
 		const themeClasses = desktopState.currentTheme === 'light' 
-			? 'text-gray-900 hover:bg-gray-100/70' 
-			: 'text-white hover:bg-gray-700/70';
+			? 'text-neutral-900 hover:bg-neutral-100/70' 
+			: 'text-white hover:bg-neutral-700/70';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
@@ -369,7 +369,7 @@
 			<div class="max-h-80 overflow-y-auto">
 				{#if notifications.length === 0}
 					<div class={emptyStateClasses()}>
-						<svg class="mx-auto h-12 w-12 text-gray-400 mb-2" viewBox="0 0 24 24" fill="currentColor">
+						<svg class="mx-auto h-12 w-12 text-neutral-400 mb-2" viewBox="0 0 24 24" fill="currentColor">
 							<path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
 						</svg>
 						No new notifications
@@ -389,7 +389,7 @@
 								</div>
 							</div>
 							<button
-								class="ml-2 text-gray-400 hover:text-gray-600 transition-colors"
+								class="ml-2 text-neutral-400 hover:text-neutral-600 transition-colors"
 								onclick={() => dismissNotification(notification.id)}
 								aria-label="Dismiss notification"
 							>
@@ -420,7 +420,7 @@
 					</div>
 				</div>
 
-				<hr class="border-gray-300 dark:border-gray-600" />
+				<hr class="border-neutral-300 dark:border-neutral-600" />
 
 				<!-- Volume Control -->
 				<div>
@@ -458,7 +458,7 @@
 					</div>
 				</div>
 
-				<hr class="border-gray-300 dark:border-gray-600" />
+				<hr class="border-neutral-300 dark:border-neutral-600" />
 
 				<!-- Battery Status -->
 				<div class="flex items-center justify-between">
@@ -507,7 +507,7 @@
 					Help & Support
 				</button>
 				
-				<hr class="my-2 border-gray-300 dark:border-gray-600" />
+				<hr class="my-2 border-neutral-300 dark:border-neutral-600" />
 				
 				<button class={userMenuDangerButtonClasses()}>
 					<svg class="inline h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor">

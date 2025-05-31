@@ -462,7 +462,7 @@
 		const baseClasses = 'h-6 w-6 transition-all duration-300 group-hover:scale-110';
 		const themeClasses =
 			desktopState.currentTheme === 'light'
-				? 'text-gray-800 group-hover:text-blue-600'
+				? 'text-neutral-800 group-hover:text-blue-600'
 				: 'text-white group-hover:text-blue-400';
 		return `${baseClasses} ${themeClasses}`;
 	});
@@ -472,8 +472,8 @@
 			'pointer-events-none absolute bottom-16 left-1/2 transform -translate-x-1/2 rounded-xl px-3 py-2 text-xs font-semibold whitespace-nowrap opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:-translate-y-2 shadow-xl backdrop-blur-lg border z-10';
 		const themeClasses =
 			desktopState.currentTheme === 'light'
-				? 'bg-gray-900/90 text-white border-gray-700/50'
-				: 'bg-white/95 text-gray-900 border-gray-200/50';
+				? 'bg-neutral-900/90 text-white border-neutral-700/50'
+				: 'bg-white/95 text-neutral-900 border-neutral-200/50';
 		return `${baseClasses} ${themeClasses}`;
 	});
 
@@ -540,7 +540,7 @@
 						class="pointer-events-none absolute bottom-4 left-1/2 -translate-x-1/2 transform rounded-lg px-2 py-1 text-xs font-medium whitespace-nowrap opacity-0 shadow-lg backdrop-blur-sm transition-all duration-200 group-hover:-translate-y-1 group-hover:opacity-100 {desktopState.currentTheme ===
 						'light'
 							? 'bg-black/80 text-white'
-							: 'bg-white/90 text-gray-900'}"
+							: 'bg-white/90 text-neutral-900'}"
 					>
 						{window.name}
 					</div>

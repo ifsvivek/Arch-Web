@@ -38,30 +38,30 @@
 	const windowClasses = $derived(
 		`absolute overflow-hidden rounded-lg border shadow-2xl select-none backdrop-blur-xl ${
 			isDarkTheme 
-				? 'border-gray-600 bg-gray-900/30' 
-				: 'border-gray-300 bg-white/30'
+				? 'border-neutral-600 bg-neutral-900/30' 
+				: 'border-neutral-300 bg-white/30'
 		}`
 	);
 
 	const titleBarClasses = $derived(
 		`flex cursor-grab items-center justify-between border-b px-4 py-2 active:cursor-grabbing ${
 			isDarkTheme 
-				? 'border-gray-600 bg-gray-700' 
-				: 'border-gray-200 bg-gray-100'
+				? 'border-neutral-600 bg-neutral-700' 
+				: 'border-neutral-200 bg-neutral-100'
 		}`
 	);
 
 	const titleClasses = $derived(
 		`truncate text-sm font-medium ${
-			isDarkTheme ? 'text-white' : 'text-gray-900'
+			isDarkTheme ? 'text-white' : 'text-neutral-900'
 		}`
 	);
 
 	const contentClasses = $derived(
 		`flex-1 overflow-auto ${
 			isDarkTheme 
-				? 'bg-gray-900/50 text-white' 
-				: 'bg-white/50 text-gray-900'
+				? 'bg-neutral-900/50 text-white' 
+				: 'bg-white/50 text-neutral-900'
 		}`
 	);
 
