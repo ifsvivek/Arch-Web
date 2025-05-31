@@ -1,124 +1,213 @@
-# Svelte 5 Gnome-like Arch Linux Desktop Simulator
+# Arch Web Desktop
 
-## 📜 Description
+A modern web-based desktop environment that recreates the Arch Linux desktop experience in your browser. Built with SvelteKit and featuring a complete window management system, applications, and desktop utilities.
 
-This project is a web-based simulation of a Gnome desktop environment, styled with an Arch Linux theme. It's built using the latest web technologies, Svelte 5 and Tailwind CSS 4, to create a dynamic and responsive user interface. The simulator aims to replicate the look and feel of a modern Linux desktop, complete with several functional mini-applications and interactive window management.
-
-The entire experience is designed to run in a web browser, showcasing the power of Svelte 5's reactive capabilities (Runes) and Tailwind CSS 4's utility-first styling approach with its advanced Just-in-Time (JIT) engine.
+![Arch Web Desktop](https://img.shields.io/badge/Framework-SvelteKit-FF3E00?style=for-the-badge&logo=svelte)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0.0-green?style=for-the-badge)
 
 ## ✨ Features
 
-- **Gnome-inspired Desktop Interface:**
-  - **Top Bar:** Includes an "Activities" placeholder, a live-updating clock, and a static system status icons area.
-  - **Dock/Dash:** A launcher for the included applications.
-  - **Desktop Area:** The main workspace where application windows are rendered.
-- **Arch Linux Theming:** Subtle visual cues and color schemes inspired by Arch Linux.
-- **Interactive Window Management:**
-  - Application windows are draggable within the desktop area.
-  - Windows can be closed.
-  - (Conceptual) Active window comes to the front (z-index management).
-- **Functional Mini-Applications:**
-  - **Calculator:** Perform basic arithmetic operations (+, -, \*, /) with a familiar UI.
-  - **Text Editor:** A simple editor for creating and modifying plain text. Includes options for new, clear, and simulated save.
-  - **Terminal (Simulated):** Emulates a terminal window, accepting a few predefined commands (e.g., `date`, `uname -a`, `echo`, `clear`) and displaying their output.
-  - **File Explorer (Simulated):** A basic visual representation of a file system, allowing navigation through a predefined, static directory structure.
-- **Modern Technology Stack:** Built with cutting-edge Svelte 5 and Tailwind CSS 4.
+### 🖥️ Desktop Environment
 
-## 🛠️ Tech Stack
+- **Complete Window Management**: Draggable, resizable windows with proper z-index handling
+- **Modern Dock**: macOS-style dock with application launcher and running application indicators
+- **Top Bar**: System status, time, and quick access to applications
+- **Theme System**: Light/Dark/Auto themes with system preference detection
+- **Wallpaper Support**: Multiple wallpaper options including custom backgrounds
 
-- **Svelte 5:** A radical, new version of the UI framework that compiles components to highly efficient imperative JavaScript. This project heavily utilizes Svelte 5's new **Runes** (`$state`, `$derived`, `$effect`, etc.) for fine-grained reactivity and state management.
-- **Tailwind CSS 4:** A utility-first CSS framework. This version features a new high-performance engine, enabling powerful Just-in-Time (JIT) compilation of styles directly from your markup with minimal to zero configuration for standard usage.
-- **JavaScript/TypeScript:** Used for application logic within Svelte components.
+### 📱 Built-in Applications
 
-## 🏗️ Project Structure (Conceptual)
+- **📁 File Explorer**: Browse and manage files and folders
+- **📝 Text Editor**: Create and edit documents with syntax highlighting
+- **💻 Terminal**: Command-line interface simulation
+- **🧮 Calculator**: Full-featured calculator application
+- **🖼️ Image Viewer**: View and manage images and photos
+- **📊 System Monitor**: Monitor system performance and resources
+- **⚙️ Settings**: Configure desktop preferences and system options
+- **🌐 Web Browser**: Browse the web with a built-in browser
+- **🎵 Music Player**: Play and manage your music collection
 
-The application is built around a component-based architecture, leveraging Svelte 5's capabilities:
+### 🔍 Advanced Search
 
-- **`App.svelte`:** The main application component, orchestrating the layout of the desktop (Top Bar, Dock, Desktop Area). It manages the overall state of open applications and active windows.
-- **`TopBar.svelte`:** Renders the top bar of the desktop interface.
-- **`Dock.svelte`:** Renders the application launcher dock.
-- **`Window.svelte`:** A generic, reusable component for creating application windows. It handles common window behaviors like dragging and closing, and accepts application-specific content via slots or props.
-- **Application Components (`Calculator.svelte`, `TextEditor.svelte`, `Terminal.svelte`, `FileExplorer.svelte`):** Each application is its own Svelte component, encapsulating its UI and logic. These are rendered within instances of the `Window.svelte` component.
-- **State Management (`*.js` or `*.ts` modules):** Svelte 5 Runes exported from modules (or used with Svelte's context API) manage global state, such as the list of open windows, their properties, and the currently active window.
+- **Intelligent App Search**: Fuzzy search with scoring algorithm
+- **Keyword Matching**: Search by app name, category, or description
+- **Real-time Results**: Debounced search with performance metrics
+- **Search Suggestions**: Quick access to popular applications
+- **Keyboard Shortcuts**: Full keyboard navigation support
 
-## 🚀 Setup and Running
+### 🎨 Customization
 
-To set up and run this project locally (assuming a standard SvelteKit or Svelte project structure):
+- **Multiple Themes**: Light, Dark, and Auto (system preference)
+- **Wallpaper Gallery**: Various wallpaper options including gradients
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Smooth Animations**: Fluid transitions and hover effects
+- **Glassmorphism UI**: Modern backdrop blur effects
 
-**Prerequisites:**
+## 🚀 Getting Started
 
-- Node.js (latest LTS version recommended)
-- npm, pnpm, or yarn (as per your preference)
+### Prerequisites
 
-**Installation:**
+- Node.js 18+
+- npm or yarn or pnpm
 
-1.  Clone or download the project files to your local machine.
-2.  Open your terminal and navigate to the project's root directory.
-3.  Install the necessary dependencies:
-    ```bash
-    npm install
-    # or
-    pnpm install
-    # or
-    yarn install
-    ```
+### Installation
 
-**Running the Development Server:**
+1. **Clone the repository**
 
-Once the dependencies are installed, you can start the development server:
+   ```bash
+   git clone https://github.com/ifsvivek/Arch-Web.git
+   cd Arch-Web
+   ```
 
-```bash
-npm run dev
-# or
-pnpm run dev
-# or
-yarn dev
-```
+2. **Install dependencies**
 
-This will typically start the application on `http://localhost:5173` (or another port as configured). The development server provides Hot Module Replacement (HMR) for a smooth development experience.
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
 
-**Building for Production (Conceptual):**
+3. **Start the development server**
 
-To create an optimized production build:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+4. **Open your browser**
+   Navigate to `http://localhost:5173` to see the desktop environment.
+
+### Building for Production
 
 ```bash
 npm run build
-# or
-pnpm run build
-# or
-yarn build
 ```
 
-This command will compile the Svelte application into static assets (usually in a `build` or `dist` directory) that can be deployed to any static web hosting service.
+The built application will be in the `build/` directory, ready for deployment.
 
-## Svelte 5 Runes 룬
+## 🏗️ Project Structure
 
-This project embraces Svelte 5's new reactive primitives, Runes, for managing state and side effects:
+```
+src/
+├── components/           # Reusable UI components
+│   ├── Dock.svelte      # Application dock with search
+│   ├── TopBar.svelte    # System top bar
+│   └── Window.svelte    # Window management component
+├── lib/
+│   └── stores/          # Application state management
+│       └── desktop.svelte.js  # Desktop state store
+├── routes/
+│   └── +page.svelte     # Main desktop page
+└── apps/                # Built-in applications
+    ├── FileExplorer/
+    ├── TextEditor/
+    ├── Terminal/
+    ├── Calculator/
+    ├── ImageViewer/
+    ├── SystemMonitor/
+    ├── Settings/
+    ├── WebBrowser/
+    └── MusicPlayer/
+```
 
-- **`$state()`:** Used to declare reactive state variables within components or stores. Changes to these variables automatically trigger UI updates where they are used.
-- **`$derived()`:** Used to create reactive values that are computed from other reactive state. These recalculate automatically when their dependencies change.
-- **`$effect()`:** Used to run side effects (like DOM manipulations not handled by Svelte, data fetching, or logging) in response to changes in reactive state.
-- **Props (e.g., `let { title } = $props()`):** The new way props are declared and accessed in Svelte 5 components.
+## 🛠️ Technology Stack
 
-Runes offer more granular control over reactivity and aim to make Svelte code even more intuitive and performant.
+- **Frontend Framework**: SvelteKit (Svelte 5 with Runes)
+- **Styling**: TailwindCSS
+- **State Management**: Svelte 5 Runes (`$state`, `$derived`)
+- **Build Tool**: Vite
+- **Language**: JavaScript
 
-## Tailwind CSS 4 Usage
+## 🎯 Key Features Explained
 
-Tailwind CSS 4 is used for all styling in this project. Key aspects of its usage include:
+### Window Management
 
-- **Utility-First:** Styling is achieved by applying pre-defined utility classes directly in the HTML markup of Svelte components (e.g., `bg-blue-500`, `text-white`, `p-4`, `flex`).
-- **JIT Engine:** Tailwind CSS 4's advanced Just-in-Time engine scans your template files and generates only the CSS that is actually used, resulting in highly optimized stylesheets. For this project, we assume a minimal configuration setup, relying on the power of its default JIT capabilities.
-- **Responsive Design:** Tailwind's responsive modifiers (e.g., `md:flex`, `lg:text-lg`) are used to adapt the layout and styling for different screen sizes.
+- **Draggable Windows**: Click and drag title bars to move windows
+- **Resizable**: Drag window edges and corners to resize
+- **Z-Index Management**: Click to bring windows to front
+- **Minimum Size Constraints**: Prevents windows from becoming too small
 
-## 💡 Potential Future Enhancements
+### Dock Features
 
-- More functional applications (e.g., simple image viewer, settings panel).
-- Resizable windows.
-- Basic file system operations within the simulated File Explorer (using `localStorage`).
-- Draggable dock icons or customizable dock.
-- User-selectable themes or wallpapers.
-- Improved accessibility.
+- **Application Launcher**: Click dock icons to launch applications
+- **Running App Indicators**: Visual indicators for open applications
+- **Search Integration**: Comprehensive search with fuzzy matching
+- **Tooltips**: Hover information for all dock items
+- **Smooth Animations**: Scale and translate effects on hover
 
----
+### Search System
 
-Thank you for checking out the Svelte 5 Gnome-like Arch Linux Desktop Simulator!
+- **Multi-term Search**: Search with multiple keywords
+- **Scoring Algorithm**: Intelligent relevance scoring
+- **Fuzzy Matching**: Handles typos and partial matches
+- **Performance Optimized**: Debounced input with timing metrics
+- **Keyboard Navigation**: Arrow keys and Enter support
+
+### Theme System
+
+- **Auto Theme**: Respects system dark/light preference
+- **Manual Override**: Choose specific light or dark themes
+- **Persistent Settings**: Saves preferences to localStorage
+- **Smooth Transitions**: Animated theme switching
+
+## 🎨 Customization
+
+### Adding New Applications
+
+1. Create a new component in `src/apps/`
+2. Add the application to the `apps` array in `Dock.svelte`
+3. Include appropriate icons and metadata
+
+### Custom Wallpapers
+
+1. Add wallpaper files to the `static/` directory
+2. Update the `wallpapers` object in `desktop.svelte.js`
+3. Add wallpaper options to the Settings app
+
+### Styling
+
+The project uses TailwindCSS for styling. Key design patterns:
+
+- **Glassmorphism**: `backdrop-blur-xl bg-white/20`
+- **Smooth Transitions**: `transition-all duration-300`
+- **Theme-aware Classes**: Dynamic classes based on theme state
+
+## 📱 Browser Compatibility
+
+- ✅ Chrome 90+
+- ✅ Firefox 88+
+- ✅ Safari 14+
+- ✅ Edge 90+
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Inspired by the Arch Linux desktop environment
+- Built with the amazing SvelteKit framework
+- Icons and design inspired by modern desktop environments
+- Community feedback and contributions
+
+## 📞 Support
+
+If you encounter any issues or have questions:
+
+- Open an issue on GitHub
+- Check the documentation
+- Review existing issues for solutions

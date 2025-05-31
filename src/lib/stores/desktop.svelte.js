@@ -203,16 +203,17 @@ export class DesktopState {
 		})
 	);
 
-	wallpaperStyle = $derived(() => {
+	wallpaperStyle = $derived.by(() => {
 		const wallpapers = {
 			'arch-nz': "background-image: url('/arch_wallpaper.png'); background-size: cover; background-position: center; background-repeat: no-repeat;",
 			'arch-blue': 'background-color: #1e3a8a;',
 			'arch-purple': 'background-color: #7c3aed;',
 			'minimal-dark': 'background-color: #111827;',
-			'gradient': 'background: linear-gradient(45deg, #1e3a8a, #7c3aed);'
+			'gradient': 'background: linear-gradient(45deg, #1e3a8a, #7c3aed);',
+			'forest': 'background-color: #065f46;',
+			'sunset': 'background: linear-gradient(45deg, #f59e0b, #ef4444);'
 		};
 		const style = wallpapers[this.currentWallpaper] || wallpapers['arch-nz'];
-		console.log('wallpaperStyle computed for', this.currentWallpaper, ':', style);
 		return style;
 	});
 }	

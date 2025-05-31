@@ -175,7 +175,7 @@
 	onmousedown={() => {
 		const elements = document.querySelectorAll('.absolute');
 		const zIndexes = Array.from(elements).map((el) => parseInt(el.style.zIndex || 0));
-		windowState.zIndex = Math.max(...zIndexes) + 1;
+		windowState.zIndex = Math.min(Math.max(...zIndexes) + 1, 9998);
 	}}
 	class={windowClasses}
 	style="left: {windowState.x}px; top: {windowState.y}px; width: {windowState.width}px; height: {windowState.height}px; z-index: {windowState.zIndex};"

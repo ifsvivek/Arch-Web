@@ -15,7 +15,7 @@
 
 <div
 	class="relative h-screen w-screen overflow-hidden bg-cover bg-center bg-no-repeat"
-	style="background-image: url('/arch_wallpaper.png'); background-color: #1a1b26;"
+	style={desktopState.wallpaperStyle}
 >
 	<!-- Overlay for better contrast -->
 	<div class="absolute inset-0 bg-black/20"></div>
