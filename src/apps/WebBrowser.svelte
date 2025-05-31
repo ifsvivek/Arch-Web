@@ -5,21 +5,16 @@
 		{ id: 1, title: 'New Tab', url: 'about:blank', active: true, loading: false }
 	]);
 	let currentTab = $state(tabs[0]);
-	let addressBar = $state('');
-	let searchSuggestions = $state([]);
-	let showSuggestions = $state(false);
+	let addressBar = $state('https://ifsvivek.in');
+	let showBookmarks = $state(false);
 	let history = $state([
-		{ url: 'https://example.com', title: 'Example', timestamp: Date.now() },
 		{ url: 'https://ifsvivek.in', title: 'ifsvivek.in', timestamp: Date.now() }
 	]);
 	let bookmarks = $state([
 		{ title: 'ifsvivek.in', url: 'https://ifsvivek.in', favicon: '🔖' },
 		{ title: 'ImageCDN', url: 'https://imagecdn.ifsvivek.in', favicon: '🔖' },
-		{ title: 'Sugar Tracker', url: 'https://sugar.ifsvivek.in', favicon: '🔖' },
-		{ title: 'Wikipedia', url: 'https://wikipedia.org', favicon: '🔖' },
-		{ title: 'Archive.org', url: 'https://archive.org', favicon: '🔖' }
+		{ title: 'Sugar Tracker', url: 'https://sugar.ifsvivek.in', favicon: '🔖' }
 	]);
-	let showBookmarks = $state(false);
 	let showHistory = $state(false);
 	let canGoBack = $state(false);
 	let canGoForward = $state(false);
@@ -64,14 +59,20 @@
 	}
 
 	function navigateTo(url) {
-		if (!url.startsWith('http://') && !url.startsWith('https://')) {
-			// Check if it looks like a domain or search query
-			if (url.includes('.') && !url.includes(' ')) {
-				url = 'https://' + url;
-			} else {
-				// Treat as search query
-				url = 'https://duckduckgo.com/?q=' + encodeURIComponent(url);
+		// Only allow navigation to your portfolio domains
+		const allowedDomains = ['ifsvivek.in', 'imagecdn.ifsvivek.in', 'sugar.ifsvivek.in'];
+
+		try {
+			const urlObj = new URL(url.startsWith('http') ? url : 'https://' + url);
+			const domain = urlObj.hostname;
+
+			if (!allowedDomains.includes(domain)) {
+				// Redirect to main portfolio if trying to access other domains
+				url = 'https://ifsvivek.in';
 			}
+		} catch {
+			// If URL parsing fails, redirect to main portfolio
+			url = 'https://ifsvivek.in';
 		}
 
 		currentTab.loading = true;
@@ -85,31 +86,11 @@
 			{ url, title: getDomainFromUrl(url), timestamp: Date.now() },
 			...history.slice(0, 49)
 		];
-
-		showSuggestions = false;
-	}
-
-	function handleAddressBarInput(event) {
-		addressBar = event.target.value;
-		if (addressBar.length > 2) {
-			searchSuggestions = bookmarks
-				.filter(
-					(b) =>
-						b.title.toLowerCase().includes(addressBar.toLowerCase()) ||
-						b.url.toLowerCase().includes(addressBar.toLowerCase())
-				)
-				.slice(0, 5);
-			showSuggestions = searchSuggestions.length > 0;
-		} else {
-			showSuggestions = false;
-		}
 	}
 
 	function handleAddressBarKeydown(event) {
 		if (event.key === 'Enter') {
 			navigateTo(addressBar);
-		} else if (event.key === 'Escape') {
-			showSuggestions = false;
 		}
 	}
 
@@ -162,12 +143,15 @@
 		}
 	}
 
-	// Sample websites for demonstration
+	// Sample portfolio sites for demonstration
 	const sampleSites = [
 		{ name: 'ifsvivek.in', url: 'https://ifsvivek.in', description: 'Personal website of Vivek' },
-		{ name: 'Wikipedia', url: 'https://wikipedia.org', description: 'Free encyclopedia' },
-		{ name: 'Archive.org', url: 'https://archive.org', description: 'Internet Archive' },
-		{ name: 'Example.com', url: 'https://example.com', description: 'Simple example website' }
+		{ name: 'ImageCDN', url: 'https://imagecdn.ifsvivek.in', description: 'Image hosting service' },
+		{
+			name: 'Sugar Tracker',
+			url: 'https://sugar.ifsvivek.in',
+			description: 'Diabetes management tool'
+		}
 	];
 </script>
 
@@ -310,10 +294,8 @@
 				<input
 					type="text"
 					bind:value={addressBar}
-					oninput={handleAddressBarInput}
 					onkeydown={handleAddressBarKeydown}
-					onfocus={() => (showSuggestions = searchSuggestions.length > 0)}
-					placeholder="Search or enter address"
+					placeholder="Enter portfolio address"
 					class="w-full rounded-lg border px-4 py-2 pr-10 transition-all duration-200 focus:ring-2 focus:ring-blue-500/30 focus:outline-none
 					{isDarkTheme
 						? 'border-neutral-600 bg-neutral-700/80 text-white placeholder-neutral-400'
@@ -333,28 +315,6 @@
 					{/if}
 				</div>
 			</div>
-
-			<!-- Search Suggestions -->
-			{#if showSuggestions}
-				<div
-					class="absolute top-full right-0 left-0 z-50 mt-1 rounded-lg border shadow-xl backdrop-blur-xl
-				{isDarkTheme ? 'border-neutral-600 bg-neutral-800/95' : 'border-neutral-200 bg-white/95'}"
-				>
-					{#each searchSuggestions as suggestion}
-						<button
-							onclick={() => navigateTo(suggestion.url)}
-							class="hover:bg-opacity-10 flex w-full items-center space-x-3 px-4 py-3 text-left transition-colors
-							{isDarkTheme ? 'hover:bg-white' : 'hover:bg-neutral-600'}"
-						>
-							<span class="text-lg">{suggestion.favicon}</span>
-							<div class="flex-1">
-								<div class="font-medium">{suggestion.title}</div>
-								<div class="text-sm opacity-70">{suggestion.url}</div>
-							</div>
-						</button>
-					{/each}
-				</div>
-			{/if}
 		</div>
 
 		<!-- Menu Buttons -->
@@ -447,12 +407,12 @@
 			<div class="flex h-full flex-col items-center justify-center p-8">
 				<div class="mb-8 text-6xl">🌐</div>
 				<h2 class="mb-4 text-2xl font-bold">Welcome to Arch Web Browser</h2>
-				<p class="mb-8 text-center opacity-70">Start browsing by entering a URL or searching</p>
+				<p class="mb-8 text-center opacity-70">Browse my portfolio projects</p>
 
 				<div class="w-full max-w-md">
 					<input
 						type="text"
-						placeholder="Search or enter address"
+						placeholder="Enter portfolio address"
 						bind:value={addressBar}
 						onkeydown={handleAddressBarKeydown}
 						class="w-full rounded-lg border px-4 py-3 transition-all duration-200 focus:ring-2 focus:ring-blue-500/30 focus:outline-none
